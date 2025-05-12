@@ -4,8 +4,6 @@ class CreateUsers < ActiveRecord::Migration[8.0]
       t.string :name, null: false, limit: 50
       t.string :email, null: false
       t.string :password_digest, null: false
-      t.string :job_title, limit: 50
-      t.integer :age, null: false
 
       t.timestamps
     end

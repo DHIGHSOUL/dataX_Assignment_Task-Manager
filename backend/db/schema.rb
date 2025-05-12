@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_12_094937) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_12_121745) do
   create_table "categories", force: :cascade do |t|
     t.string "name", null: false
     t.string "color"
@@ -28,13 +28,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_12_094937) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["workspace_id"], name: "index_invitation_codes_on_workspace_id"
-  end
-
-  create_table "jwt_blacklists", force: :cascade do |t|
-    t.string "token"
-    t.datetime "exp"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "task_assignments", force: :cascade do |t|
@@ -99,8 +92,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_12_094937) do
     t.string "name", limit: 50, null: false
     t.string "email", null: false
     t.string "password_digest", null: false
-    t.string "job_title", limit: 50
-    t.integer "age", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
