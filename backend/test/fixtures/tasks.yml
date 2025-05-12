@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  description: MyText
+  status: MyString
+  due_date: 2025-05-12 13:42:57
+  workspace: one
+  category: one
+  created_by_user: 1
+
+two:
+  name: MyString
+  description: MyText
+  status: MyString
+  due_date: 2025-05-12 13:42:57
+  workspace: two
+  category: two
+  created_by_user: 1
