@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_12_121745) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_13_094308) do
   create_table "categories", force: :cascade do |t|
     t.string "name", null: false
     t.string "color"
@@ -23,8 +23,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_12_121745) do
   create_table "invitation_codes", force: :cascade do |t|
     t.integer "workspace_id", null: false
     t.string "code"
-    t.datetime "expires_at"
-    t.boolean "used"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["workspace_id"], name: "index_invitation_codes_on_workspace_id"

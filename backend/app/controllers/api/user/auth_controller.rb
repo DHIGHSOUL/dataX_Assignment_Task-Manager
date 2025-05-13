@@ -5,6 +5,7 @@ module Api
         class AuthController < ApplicationController
             skip_before_action :authorize_request, only: [:signup, :login]
 
+            # 新しいユーザーを登録
             def signup
                 user = ::User.new(user_params)
                 if user.save
@@ -14,6 +15,7 @@ module Api
                 end
             end
 
+            # 登録されている情報でログイン
             def login
                 user = ::User.find_by(email: params[:user][:email])
                 if user&.authenticate(params[:user][:password])
@@ -24,10 +26,12 @@ module Api
                 end
             end
 
+            # ログアウト
             def logout
                 render json: { message: 'Logged out successfully' }, status: :ok
             end
 
+            # ユーザー情報を更新
             def update_name
                 user = current_user
                 if user.update(name: params[:user][:name])
@@ -37,6 +41,7 @@ module Api
                 end
             end
 
+            # パスワードを更新
             def update_password
                 user = current_user
                 if user.update(password: params[:user][:password], password_confirmation: params[:user][:password_confirmation])
@@ -46,6 +51,7 @@ module Api
                 end
             end
 
+            # ユーザー自身の情報を取得
             def me
                 header = request.headers['Authorization']
                 token = header.split(' ').last if header

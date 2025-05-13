@@ -42,7 +42,7 @@ const handleLogin = async () => {
             router.push('/main')
         }
     } catch (err: any) {
-        alert('ログインに失敗しました。');
+        alert('メールやパスワードが間違っています。');
     }
 };
 

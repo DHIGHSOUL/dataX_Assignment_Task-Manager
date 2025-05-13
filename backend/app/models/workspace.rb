@@ -7,5 +7,7 @@ class Workspace < ApplicationRecord
 
     has_many :task_progresses, dependent: :destroy
 
+    has_one :invitation_code, dependent: :destroy
+
     validates :name, presence: true
 end
