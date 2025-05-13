@@ -20,6 +20,11 @@ const routes = [
         component: MainPage
     },
     {
+        path: '/workspace/:id',
+        name: 'Workspace',
+        component: () => import('../views/WorkspacePage.vue')
+    },
+    {
         path: '/',
         redirect: '/login'
     }

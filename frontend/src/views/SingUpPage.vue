@@ -106,7 +106,7 @@ input {
     font-size: 14px;
     background-color: white;
     border-radius: 6px;
-    border-width: 1px;
+    border-width: 0px;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3)
 }
 
