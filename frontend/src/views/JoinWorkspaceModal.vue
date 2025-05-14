@@ -1,8 +1,8 @@
 <template>
     <div class="modal-overlay" @click.self="close">
         <div class="modal-content">
-            <h2>ワークスペースに参加</h2>
-            <p>参加コードを入力してください。</p>
+            <h1>ワークスペースに参加</h1>
+            <p class="join-label">参加コードを入力してください。</p>
             <form>
                 <input v-model="workspaceName" placeholder="参加コード" type="text" required />
                 <button class="join-button" @click="createWorkspace">参加</button>
@@ -59,10 +59,20 @@ const close = () => {
 .modal-content {
     background-color: white;
     padding: 30px;
-    width: 300px;
+    width: 600px;
     text-align: center;
     border-radius: 12px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    margin-bottom: 30px;
+    font-size: 48px;
+}
+
+.join-label {
+    font-size: 24px;
+    margin-bottom: 20px;
 }
 
 form {
@@ -74,6 +84,7 @@ form {
 
 input {
     padding: 5px 5px;
+    font-size: 24px;
     align-self: center;
     margin: 10px 0;
     border: 1px solid black;
@@ -82,6 +93,7 @@ input {
 
 .join-button {
     padding: 5px 20px;
+    font-size: 24px;
     color: black;
     border: none;
     border-radius: 4px;
@@ -92,6 +104,7 @@ input {
 
 .cancel-button {
     padding: 5px 20px;
+    font-size: 24px;
     color: white;
     background-color: gray;
     border: none;

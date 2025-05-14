@@ -78,7 +78,7 @@ const goBack = () => {
 
 .workspace-setting {
     text-align: center;
-    max-width: 400px;
+    max-width: 800px;
     width: 100%;
     padding: 20px;
     box-sizing: border-box;
@@ -88,6 +88,7 @@ const goBack = () => {
 }
 
 .workspace-setting h1 {
+    font-size: 48px;
     margin-bottom: 30px;
 }
 
@@ -107,6 +108,7 @@ const goBack = () => {
 .name-label {
     align-self: center;
     font-weight: bold;
+    font-size: 24px;
 }
 
 .workspace-name {
@@ -115,6 +117,7 @@ const goBack = () => {
     padding: 5px;
     border: 1px solid black;
     border-radius: 4px;
+    font-size: 24px;
 }
 
 .description-group {
@@ -127,6 +130,7 @@ const goBack = () => {
 .description-label {
     align-self: center;
     font-weight: bold;
+    font-size: 24px;
 }
 
 .workspace-description {
@@ -136,6 +140,7 @@ const goBack = () => {
     padding: 5px;
     border: 1px solid black;
     border-radius: 4px;
+    font-size: 24px;
 }
 
 .change-button {
@@ -147,6 +152,7 @@ const goBack = () => {
     border-radius: 4px;
     cursor: pointer;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+    font-size: 24px;
 }
 
 .invitation-group {
@@ -164,10 +170,12 @@ const goBack = () => {
 .invitation-label {
     align-self: center;
     font-weight: bold;
+    font-size: 24px;
 }
 
 .workspace-invitation-link {
     align-self: center;
+    font-size: 24px;
 }
 
 .close-button {

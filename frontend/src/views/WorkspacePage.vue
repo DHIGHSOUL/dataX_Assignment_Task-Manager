@@ -15,8 +15,13 @@
             <h2 class="h2-pending">待機</h2>
             <div class="task-column-list">
                 <ul class="task-list">
+                    <li v-if="tasks.length === 0" class="task-item-dummy">
+                        <div class="task-title-dummy">+</div>
+                    </li>
                     <li v-for="task in tasks.filter(t => t.status === 'pending')" :key="task.id" class="task-item">
-                        {{ task.name }}
+                        <div class="task-title">{{ task.name }}</div>
+                        <div class="task-description">{{ task.description }}</div>
+                        <div class="task-due-date">{{ task.due_date?.slice(0, 10) || null }}</div>
                     </li>
                 </ul>
             </div>
@@ -26,7 +31,9 @@
             <div class="task-column-list">
                 <ul class="task-list">
                     <li v-for="task in tasks.filter(t => t.status === 'in_progress')" :key="task.id" class="task-item">
-                        {{ task.name }}
+                        <div class="task-title">{{ task.name }}</div>
+                        <div class="task-description">{{ task.description }}</div>
+                        <div class="task-due-date">{{ task.due_date?.slice(0, 10) || null }}</div>
                     </li>
                 </ul>
             </div>
@@ -36,7 +43,9 @@
             <div class="task-column-list">
                 <ul class="task-list">
                     <li v-for="task in tasks.filter(t => t.status === 'completed')" :key="task.id" class="task-item">
-                        {{ task.name }}
+                        <div class="task-title">{{ task.name }}</div>
+                        <div class="task-description">{{ task.description }}</div>
+                        <div class="task-due-date">{{ task.due_date?.slice(0, 10) || null }}</div>
                     </li>
                 </ul>
             </div>
@@ -49,13 +58,26 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from '../plugins/axios'
 
+interface Task {
+    id: number
+    name: string
+    description: string | null
+    status: 'pending' | 'in_progress' | 'completed'
+    due_date: string | null
+    workspace_id: number
+    workspace_category_id: number | null
+    created_at_user: string | null
+    cerated_at: string
+    updated_at: string
+}
+
 const route = useRoute()
 const router = useRouter()
 
 const workspaceID = Number(route.params.id)
 const workspaceName = ref('')
 
-const tasks = ref([])
+const tasks = ref<Task[]>([])
 
 const fetchWorkspaceName = async () => {
     try {
@@ -119,13 +141,19 @@ const logout = async () => {
 .left-menu-bar {
     display: flex;
     flex-direction: row;
-    gap: 20px;
+    gap: 30px;
+}
+
+h1 {
+    font-size: 48px;
+    font-weight: bold;
 }
 
 .return-button {
     align-self: center;
     height: 30%;
     padding: 8px 20px;
+    font-size: 24px;
     color: white;
     background-color: gray;
     border: none;
@@ -137,13 +165,14 @@ const logout = async () => {
 .menu-bar {
     display: flex;
     flex-direction: row;
-    gap: 20px;
+    gap: 30px;
 }
 
 .setting-button {
     align-self: center;
     height: 30%;
     padding: 10px 20px;
+    font-size: 24px;
     color: white;
     background-color: gray;
     border: none;
@@ -156,6 +185,7 @@ const logout = async () => {
     padding: 5px 20px;
     color: white;
     background-color: #007bff;
+    font-size: 24px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -166,6 +196,7 @@ const logout = async () => {
     padding: 5px 20px;
     color: white;
     background-color: #f44336;
+    font-size: 24px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -175,20 +206,21 @@ const logout = async () => {
 .task-board-section {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: space-evenly;
     gap: 20px;
-    padding: 0 100px;
 }
 
 .task-column {
     flex: 1;
     display: flex;
     flex-direction: column;
+    align-items: center;
 }
 
 .h2-pending {
-    padding: 10px 20px;
+    padding: 15px 30px;
     margin-bottom: 30px;
+    font-size: 36px;
     align-self: center;
     border-radius: 10px;
     background-color: #fadccc;
@@ -196,8 +228,9 @@ const logout = async () => {
 }
 
 .h2-in-progress {
-    padding: 10px 20px;
+    padding: 15px 30px;
     margin-bottom: 30px;
+    font-size: 36px;
     align-self: center;
     border-radius: 10px;
     background-color: #d1f0c6;
@@ -205,8 +238,9 @@ const logout = async () => {
 }
 
 .h2-completed {
-    padding: 10px 20px;
+    padding: 10px 30px;
     margin-bottom: 30px;
+    font-size: 36px;
     align-self: center;
     border-radius: 10px;
     background-color: #b5dff3;
@@ -214,16 +248,69 @@ const logout = async () => {
 }
 
 .task-column-list {
-    width: 70%;
+    width: 80%;
     flex: 1;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
     align-self: center;
-    padding: 30px;
-    background-color: #f0f0f0;
+}
+
+.task-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+}
+
+.task-item {
+    display: flex;
+    width: 80%;
+    flex-direction: column;
+    align-items: start;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 24px;
     border-radius: 10px;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.task-item-dummy {
+    display: flex;
+    width: 80%;
+    flex-direction: column;
+    align-items: center;
+    align-self: center;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 24px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.task-title-dummy {
+    font-weight: bold;
+    font-size: 36px;
+}
+
+.task-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.task-description {
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+
+.task-due-date {
+    font-size: 18px;
+    color: #888;
 }
 </style>

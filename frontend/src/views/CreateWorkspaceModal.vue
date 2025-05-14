@@ -1,8 +1,8 @@
 <template>
     <div class="modal-overlay" @click.self="close">
         <div class="modal-content">
-            <h2>ワークスペース作成</h2>
-            <p>作成するワークスペース名を入力してください。</p>
+            <h1>ワークスペース作成</h1>
+            <p class="create-label">作成するワークスペース名を入力してください。</p>
             <form>
                 <input class="name-input" v-model="workspaceName" placeholder="ワークスペース名" type="text" required />
                 <textarea class="description-input" v-model="workspaceDescription" placeholder="ワークスペースの説明(Option)" type="text" />
@@ -64,10 +64,20 @@ const close = () => {
 .modal-content {
     background-color: white;
     padding: 30px;
-    width: 300px;
+    width: 600px;
     text-align: center;
     border-radius: 12px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    font-size: 48px;
+    margin-bottom: 30px;
+}
+
+.create-label {
+    font-size: 24px;
+    margin-bottom: 20px;
 }
 
 form {
@@ -79,7 +89,7 @@ form {
 
 .name-input {
     padding: 5px 5px;
-    font-size: 16px;
+    font-size: 24px;
     align-self: center;
     border: 1px solid black;
     border-radius: 4px;
@@ -88,7 +98,7 @@ form {
 .description-input {
     width: 80%;
     min-height: 60px;
-    font-size: 16px;
+    font-size: 24px;
     margin: 10px 0;
     padding: 5px;
     align-self: center;
@@ -98,6 +108,7 @@ form {
 
 .create-button {
     padding: 5px 20px;
+    font-size: 24px;
     color: black;
     border: none;
     border-radius: 4px;
@@ -108,6 +119,7 @@ form {
 
 .cancel-button {
     padding: 5px 20px;
+    font-size: 24px;
     color: white;
     background-color: gray;
     border: none;

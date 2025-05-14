@@ -105,15 +105,21 @@ const goToMyPage = () => {
     margin: 0 auto;
 }
 
+.main-page-header > h1 {
+    font-size: 48px;
+    font-weight: bold;
+}
+
 .menu-bar {
     display: flex;
     flex-direction: row;
-    gap: 20px;
+    gap: 30px;
 }
 
 .mypage-button {
     padding: 10px 20px;
     color: white;
+    font-size: 24px;
     background-color: #007bff;
     border: none;
     border-radius: 4px;
@@ -124,6 +130,7 @@ const goToMyPage = () => {
 .logout-button {
     padding: 10px 20px;
     color: white;
+    font-size: 24px;
     background-color: #f44336;
     border: none;
     border-radius: 4px;
@@ -173,12 +180,17 @@ const goToMyPage = () => {
     height: 60px;
 }
 
+.workspace-button-group-in-list > h2 {
+    font-size: 36px;
+    font-weight: bold;
+}
+
 .create-workspace-button-in-list {
     width: 60px;
-    height: 30px;
+    height: 40px;
     background-color: white;
     align-self: center;
-    font-size: 20px;
+    font-size: 24px;
     border: none;
     border-radius: 8px;
     color: black;
@@ -188,9 +200,9 @@ const goToMyPage = () => {
 
 .join-workspace-button-in-list {
     width: 80px;
-    height: 30px;
+    height: 40px;
     background-color: white;
-    font-size: 16px;
+    font-size: 24px;
     border: none;
     border-radius: 8px;
     color: black;
@@ -199,15 +211,16 @@ const goToMyPage = () => {
 }
 
 .workspace-card-item {
+    margin: 20px;
     background-color: white;
     border-radius: 16px;
     border-width: 0px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     padding: 70px 0px;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
     flex: 1 1 300px;
-    max-width: 300px;
+    max-width: 400px;
     text-align: center;
 }
 

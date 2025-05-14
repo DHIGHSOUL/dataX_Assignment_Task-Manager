@@ -97,7 +97,7 @@ const logout = async () => {
 
 .my-page {
     text-align: center;
-    max-width: 400px;
+    max-width: 700px;
     width: 100%;
     padding: 20px;
     box-sizing: border-box;
@@ -108,6 +108,7 @@ const logout = async () => {
 
 .my-page h1 {
     margin-bottom: 30px;
+    font-size: 48px;
 }
 
 .mypage-body {
@@ -128,10 +129,12 @@ const logout = async () => {
 .email-label {
     align-self: center;
     font-weight: bold;
+    font-size: 24px;
 }
 
 .user-email {
     align-self: center;
+    font-size: 24px;
 }
 
 .password-group {
@@ -146,11 +149,13 @@ const logout = async () => {
 .password-label {
     align-self: center;
     font-weight: bold;
+    font-size: 24px;
 }
 
 .change-password-button {
     align-self: center;
     padding: 5px 20px;
+    font-size: 24px;
     color: white;
     background-color: #007bff;
     border: none;
@@ -171,10 +176,12 @@ const logout = async () => {
 .name-label {
     align-self: center;
     font-weight: bold;
+    font-size: 24px;
 }
 
 .user-name {
     align-self: center;
+    font-size: 24px;
 }
 
 .change-name-group {
@@ -186,6 +193,7 @@ const logout = async () => {
 .change-name-button {
     align-self: center;
     padding: 5px 20px;
+    font-size: 24px;
     color: white;
     background-color: #007bff;
     border: none;
@@ -198,7 +206,7 @@ const logout = async () => {
     align-self: center;
     display: flex;
     flex-direction: row;
-    gap: 20px;
+    gap: 30px;
     margin-bottom: 30px;
 }
 
@@ -206,6 +214,7 @@ const logout = async () => {
     align-self: center;
     height: 30%;
     padding: 5px 20px;
+    font-size: 24px;
     color: white;
     background-color: gray;
     border: none;
@@ -216,6 +225,7 @@ const logout = async () => {
 
 .logout-button {
     padding: 5px 20px;
+    font-size: 24px;
     color: white;
     background-color: #f44336;
     border: none;

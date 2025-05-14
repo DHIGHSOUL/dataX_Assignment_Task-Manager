@@ -1,8 +1,8 @@
 <template>
     <div class="modal-overlay" @click.self="close">
         <div class="modal-content">
-            <h2>名前変更</h2>
-            <p>変更する名前を入力してください。</p>
+            <h1>名前変更</h1>
+            <p class="change-label">変更する名前を入力してください。</p>
             <div class="change-name-group">
                 <input class="name-input" v-model="name" placeholder="名前" type="text" required />
                 <button class="change-button" @click="changeName">更新</button>
@@ -60,10 +60,20 @@
     .modal-content {
         background-color: white;
         padding: 30px;
-        width: 300px;
+        width: 600px;
         text-align: center;
         border-radius: 12px;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        font-size: 48px;
+        margin-bottom: 20px;
+    }
+
+    .change-label {
+        font-size: 24px;
+        margin-bottom: 20px;
     }
 
     .change-name-group {
@@ -75,7 +85,7 @@
 
     .name-input {
         padding: 5px 5px;
-        font-size: 16px;
+        font-size: 24px;
         align-self: center;
         border: 1px solid black;
         border-radius: 4px;
@@ -83,6 +93,7 @@
 
     .change-button {
         padding: 5px 20px;
+        font-size: 24px;
         color: white;
         background-color: #007bff;
         border: none;
@@ -93,6 +104,7 @@
 
     .cancel-button {
         padding: 5px 20px;
+        font-size: 24px;
         color: white;
         background-color: gray;
         border: none;
