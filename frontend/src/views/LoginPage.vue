@@ -16,10 +16,24 @@
 import { ref } from 'vue';
 import axios from '../plugins/axios';
 import { useRouter } from 'vue-router';
+import { onMounted, onUnmounted } from 'vue';
 
 const router = useRouter();
 const email = ref('');
 const password = ref('');
+
+onMounted(() => {
+    history.pushState(null, '', location.href);
+    window.addEventListener('popstate', preventBack);
+})
+
+onUnmounted(() => {
+    window.removeEventListener('popstate', preventBack);
+})
+
+const preventBack = () => {
+    history.pushState(null, '', location.href);
+}
 
 const resetForm = () => {
     email.value = '';

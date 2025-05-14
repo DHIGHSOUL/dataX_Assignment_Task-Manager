@@ -26,10 +26,8 @@ const createWorkspace = async () => {
     }
 
     try {
-        await axios.post('/api/user/workspaces/join', {
-            workspace: {
-                name: workspaceName.value
-            }
+        await axios.post('/api/user_workspaces/join', {
+            code: workspaceName.value
         })
         alert('ワークスペース参加に成功しました。')
         close()
@@ -88,16 +86,18 @@ input {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3)
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+    margin-bottom: 10px;
 }
 
 .cancel-button {
     padding: 5px 20px;
     color: white;
-    background-color: #f44336;
+    background-color: gray;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3)
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+    margin-bottom: 30px;
 }
 </style>

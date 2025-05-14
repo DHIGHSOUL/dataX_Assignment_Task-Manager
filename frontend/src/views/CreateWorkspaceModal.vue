@@ -5,7 +5,7 @@
             <p>作成するワークスペース名を入力してください。</p>
             <form>
                 <input class="name-input" v-model="workspaceName" placeholder="ワークスペース名" type="text" required />
-                <textarea class="description-input" v-model="workspaceDescription" placeholder="ワークスペースの説明(Option)" type="text" required />
+                <textarea class="description-input" v-model="workspaceDescription" placeholder="ワークスペースの説明(Option)" type="text" />
                 <button class="create-button" @click="createWorkspace">作成</button>
                 <button class="cancel-button" @click="close">キャンセル</button>
             </form>
@@ -102,16 +102,18 @@ form {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3)
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+    margin-bottom: 10px;
 }
 
 .cancel-button {
     padding: 5px 20px;
     color: white;
-    background-color: #f44336;
+    background-color: gray;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3)
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+    margin-bottom: 30px;
 }
 </style>

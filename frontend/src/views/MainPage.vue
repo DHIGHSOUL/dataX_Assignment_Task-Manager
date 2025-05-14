@@ -1,7 +1,10 @@
 <template>
     <div class="main-page-header">
         <h1>メインページ</h1>
-        <button class="logout-button" @click="logout">ログアウト</button>
+        <form class="menu-bar">
+            <button class="mypage-button" @click="goToMyPage">マイページ</button>
+            <button class="logout-button" @click="logout">ログアウト</button>
+        </form>
     </div>
     <div class="workspace-section">
         <template v-if="isLoading">
@@ -71,13 +74,12 @@ axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
 
 const logout = async () => {
     const confirmLogout = window.confirm('本当にログアウトしますか？');
-    if (!confirmLogout) { return; }
+    if (!confirmLogout) return;
 
     try {
-        await axios.delete('/api/user/logout')
         localStorage.removeItem('token')
-        window.alert('ログアウトしました。')
-        router.push('/login')
+        await axios.delete('/api/user/logout')
+        window.location.replace('/')
     } catch {
         window.alert('ログアウトに失敗しました。');
     }
@@ -85,6 +87,11 @@ const logout = async () => {
 
 const goToWorkspace = (id: number) => {
     router.push(`/workspace/${id}`)
+}
+
+const goToMyPage = () => {
+    localStorage.setItem('previousPage', '/main')
+    router.push('/mypage')
 }
 </script>
 
@@ -98,8 +105,24 @@ const goToWorkspace = (id: number) => {
     margin: 0 auto;
 }
 
+.menu-bar {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
+.mypage-button {
+    padding: 10px 20px;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+}
+
 .logout-button {
-    padding: 5px 20px;
+    padding: 10px 20px;
     color: white;
     background-color: #f44336;
     border: none;
