@@ -9,12 +9,16 @@ Rails.application.routes.draw do
       get 'me', to: 'auth#me'
     end
 
-    # only: [;~]は「workspaces」自体でAPIとして使うこと
     resources :workspaces, only: [:index, :create, :show, :update, :destroy] do
       member do
         get :users
         get :invitation_code
       end
+
+      resources :tasks, only: [:index, :create]
+    end
+
+    resources :tasks, only: [:show, :destroy, :update] do
     end
 
     post 'user_workspaces/join', to: 'user_workspaces#join'

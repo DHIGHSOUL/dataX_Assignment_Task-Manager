@@ -10,16 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_13_094308) do
-  create_table "categories", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "color"
-    t.integer "workspace_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["workspace_id"], name: "index_categories_on_workspace_id"
-  end
-
+ActiveRecord::Schema[8.0].define(version: 2025_05_14_160309) do
   create_table "invitation_codes", force: :cascade do |t|
     t.integer "workspace_id", null: false
     t.string "code"
@@ -68,11 +59,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_094308) do
     t.string "status", default: "pending", null: false
     t.datetime "due_date"
     t.integer "workspace_id", null: false
-    t.integer "category_id", null: false
-    t.integer "created_by_user", null: false
+    t.integer "created_by_user"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["category_id"], name: "index_tasks_on_category_id"
+    t.integer "workspace_category_id"
+    t.index ["workspace_category_id"], name: "index_tasks_on_workspace_category_id"
     t.index ["workspace_id"], name: "index_tasks_on_workspace_id"
   end
 
@@ -95,6 +86,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_094308) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  create_table "workspace_categories", force: :cascade do |t|
+    t.string "name"
+    t.string "color"
+    t.integer "workspace_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["workspace_id"], name: "index_workspace_categories_on_workspace_id"
+  end
+
   create_table "workspaces", force: :cascade do |t|
     t.string "name"
     t.text "description"
@@ -102,7 +102,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_094308) do
     t.datetime "updated_at", null: false
   end
 
-  add_foreign_key "categories", "workspaces"
   add_foreign_key "invitation_codes", "workspaces"
   add_foreign_key "task_assignments", "tasks"
   add_foreign_key "task_assignments", "users"
@@ -110,8 +109,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_094308) do
   add_foreign_key "task_histories", "users"
   add_foreign_key "task_progresses", "users"
   add_foreign_key "task_progresses", "workspaces"
-  add_foreign_key "tasks", "categories"
+  add_foreign_key "tasks", "workspace_categories"
   add_foreign_key "tasks", "workspaces"
   add_foreign_key "user_workspaces", "users"
   add_foreign_key "user_workspaces", "workspaces"
+  add_foreign_key "workspace_categories", "workspaces"
 end
