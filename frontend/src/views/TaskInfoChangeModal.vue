@@ -11,39 +11,39 @@
                     </div>
                     <div class="task-item-group">
                         <p class="update-label">タスクの説明</p>
-                        <textarea class="description-input" v-model="taskDescription" placeholder="タスクの説明(Option)" type="text" />
+                        <textarea class="description-input" v-model="taskDescription" placeholder="タスクの説明(Option)" type="text" @input="autoResize" ref="descriptionRef" />
                     </div>
                     <div class="task-item-group">
                         <p class="update-label">タスクの期限</p>
                         <input class="due-date-input" v-model="dueDate" type="date" required />
                     </div>
                     <div class="task-item-group">
-                        <p class="update-label">タスクの期限</p>
-                        <select class="status-input" v-model="status" required>
-                            <option value="pending">待機</option>
-                            <option value="in_progress">進行中</option>
-                            <option value="completed">完了済み</option>
-                        </select>
+                        <p class="update-label">タスクの進行状況</p>
+                        <Multiselect class="status-input" v-model="selectedStatus" :options="statusOptions" label="text" track-by="value" placeholder="タスクの進行状況を選択してください" />
                     </div>
                     <button class="update-button" @click="updateTask">更新</button>
                     <button class="cancel-button" @click="close">キャンセル</button>
                 </form>
             </div>
             <div class="category-and-assignee-group">
-                <p class="update-label">タスクの担当者を選択してください。</p>
-                <select class="assignee-select" v-model="assignee">
-                    <option disabled value="">担当者を選択</option>
-                    <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
-                </select>
+                <div class="task-category-selection">
+                    <p class="update-label">タスクのカテゴリ</p>
+                    <Multiselect v-model="selectedCategory" :options="categories" label="name" track-by="id" placeholder="カテゴリを選択してください" />
+                </div>
+                <div class="task-assignee-selection">
+                    <p class="update-label">タスクの担当者を選択してください。</p>
+                <Multiselect v-model="assignee" :options="users" label="name" track-by="id" placeholder="担当者を選択してください" />
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import axios from '../plugins/axios'
-import { onMounted } from 'vue'
+import Multiselect from 'vue-multiselect'
+import 'vue-multiselect/dist/vue-multiselect.min.css'
 
 const emit = defineEmits(['close', 'update'])
 const taskName = ref('')
@@ -52,6 +52,28 @@ const dueDate = ref('')
 const status = ref('')
 const assignee = ref('')
 const users = ref<{ id: number, name: string }[]>([])
+
+const descriptionRef = ref<HTMLTextAreaElement | null>(null)
+
+interface Category {
+    id: number
+    name: string
+    color?: string
+    workspace_id: number
+    created_at: string
+    updated_at: string
+}
+
+const statusOptions = [
+    { value: 'pending', text: '待機' },
+    { value: 'in_progress', text: '進行中' },
+    { value: 'completed', text: '完了済み' }
+]
+
+const selectedStatus = ref<{ value: string, text: string } | null>(null)
+
+const categories = ref<Category[]>([])
+const selectedCategory = ref<Category | null>(null)
 
 const props = defineProps({
     taskID: {
@@ -72,7 +94,9 @@ const fetchOriginalTaskInfo = async () => {
         taskName.value = response.data.task.name
         taskDescription.value = response.data.task.description
         dueDate.value = response.data.task.due_date?.slice(0, 10) || ''
-        status.value = response.data.task.status
+        const originalStatus = response.data.task.status
+        status.value = originalStatus
+        selectedStatus.value = statusOptions.find(s => s.value === originalStatus) ?? null
     } catch (error) {
         console.error('タスク情報の取得に失敗しました。', error)
     }
@@ -88,9 +112,26 @@ const fetchUsers = async () => {
     }
 }
 
+const fectchCategories = async () => {
+    try {
+        const response = await axios.get(`/api/workspaces/${props.workspaceID}/workspace_categories`)
+        categories.value = response.data
+    } catch (error) {
+        console.error('カテゴリの取得に失敗しました。', error)
+    }
+}
+
+const autoResize = () => {
+  if (descriptionRef.value) {
+    descriptionRef.value.style.height = 'auto'
+    descriptionRef.value.style.height = descriptionRef.value.scrollHeight + 'px'
+  }
+}
+
 onMounted(() => {
     fetchOriginalTaskInfo()
     fetchUsers()
+    fectchCategories()
 })
 
 const updateTask = async () => {
@@ -105,7 +146,7 @@ const updateTask = async () => {
                 name: taskName.value,
                 description: taskDescription.value,
                 due_date: dueDate.value,
-                status: status.value
+                status: selectedStatus.value?.value,
             }
         })
         alert('タスク情報を変更しました。')
@@ -122,6 +163,20 @@ const close = () => {
 </script>
 
 <style scoped>
+::v-deep(.multiselect__placeholder) {
+  font-size: 18px;
+  color: #888;
+}
+
+::v-deep(.multiselect) {
+  width: 100%;
+  font-size: 24px;
+}
+
+::v-deep(.multiselect__input) {
+  font-size: 24px;
+}
+
 .modal-overlay {
     position: fixed;
     display: flex;
@@ -201,7 +256,7 @@ form {
     width: 100%;
     min-height: 60px;
     font-size: 24px;
-    padding: 20px 10px;
+    padding: 10px 10px;
     align-self: center;
     border: 1px solid black;
     border-radius: 4px;
@@ -217,11 +272,8 @@ form {
 }
 
 .status-input {
-    padding: 5px 5px;
     font-size: 24px;
     align-self: center;
-    border: 1px solid black;
-    border-radius: 4px;
     margin-bottom: 20px;
 }
 
@@ -246,6 +298,24 @@ form {
     border-radius: 4px;
     cursor: pointer;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+    margin-bottom: 30px;
+}
+
+.category-and-assignee-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.task-category-selection {
+    margin-top: 20px;
+    max-width: 400px;
+}
+
+.task-assignee-selection {
+    margin-top: 20px;
+    max-width: 400px;
     margin-bottom: 30px;
 }
 </style>

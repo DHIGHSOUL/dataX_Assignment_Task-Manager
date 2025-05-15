@@ -11,7 +11,7 @@
                     </div>
                     <div class="task-item-group">
                         <p class="create-label">タスクの説明</p>
-                        <textarea class="description-input" v-model="taskDescription" placeholder="タスクの説明(Option)" type="text" />
+                        <textarea class="description-input" v-model="taskDescription" placeholder="タスクの説明(Option)" type="text" @input="autoResize" ref="descriptionRef" />
                     </div>
                     <div class="task-item-group">
                         <p class="create-label">タスクの期限</p>
@@ -19,21 +19,29 @@
                     </div>
                     <button class="create-button" @click="createTask">作成</button>
                     <button class="cancel-button" @click="close">キャンセル</button>
-                </form>
+            </form>
             </div>
             <div class="category-and-assignee-group">
-                <p class="create-label">タスクの担当者を選択してください。</p>
-                <select class="assignee-select" v-model="assignee">
-                    <option disabled value="">担当者を選択</option>
-                    <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
-                </select>
+                <form>
+                    <div class="task-item-group">
+                        <p class="create-label">タスクのカテゴリ</p>
+                        <label class="task-category">example</label>
+                    </div>
+                    <div class="task-item-group">
+                        <p class="create-label">タスクの担当者を選択してください。</p>
+                        <select class="assignee-select" v-model="assignee">
+                            <option disabled value="">担当者を選択</option>
+                            <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
+                        </select>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import axios from '../plugins/axios'
 
 const emit = defineEmits(['close'])
@@ -44,6 +52,8 @@ const dueDate = ref('')
 // const selectedCategory = ref('')
 const assignee = ref('')
 const users = ref<{ id: number, name: string }[]>([])
+
+const descriptionRef = ref<HTMLTextAreaElement | null>(null)
 
 const props = defineProps({
     workspaceID: {
@@ -59,6 +69,13 @@ const fetchUsers = async () => {
     } catch (error) {
         console.error('ユーザー情報の取得に失敗しました。', error)
     }
+}
+
+const autoResize = () => {
+  if (descriptionRef.value) {
+    descriptionRef.value.style.height = 'auto'
+    descriptionRef.value.style.height = descriptionRef.value.scrollHeight + 'px'
+  }
 }
 
 onMounted(() => {
@@ -177,6 +194,23 @@ form {
 }
 
 .due-date-input {
+    padding: 10px 10px;
+    font-size: 24px;
+    align-self: center;
+    border: 1px solid black;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.task-category {
+    padding: 10px 10px;
+    font-size: 24px;
+    align-self: center;
+    border: 1px solid black;
+    border-radius: 4px;
+}
+
+.assignee-select {
     padding: 5px 5px;
     font-size: 24px;
     align-self: center;
@@ -186,7 +220,7 @@ form {
 }
 
 .create-button {
-    padding: 5px 20px;
+    padding: 10px 20px;
     font-size: 24px;
     color: white;
     background-color: #007bff;
@@ -198,7 +232,7 @@ form {
 }
 
 .cancel-button {
-    padding: 5px 20px;
+    padding: 10px 20px;
     font-size: 24px;
     color: white;
     background-color: gray;

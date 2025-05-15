@@ -24,7 +24,7 @@ Rails.application.routes.draw do
       delete 'task_assignments/:user_id', to: 'task_assignments#destroy'
     end
 
-    resources :workspace_categories, only: [:update, :destroy]
+    resources :workspace_categories, only: [:show, :update, :destroy]
 
     post 'user_workspaces/join', to: 'user_workspaces#join'
     delete 'user_workspaces/:id/leave', to: 'user_workspaces#leave'

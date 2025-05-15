@@ -35,6 +35,10 @@
                     <p class="task-category-label">タスクのカテゴリ</p>
                     <label class="task-category">example</label>
                 </div>
+                <div class="task-assignee-group">
+                    <p class="task-assignee-label">タスクの担当者</p>
+                    <label class="task-category">example</label>
+                </div>
             </form>
         </div>
     </div>
@@ -195,12 +199,18 @@ h1 {
     flex: 1;
     display: flex;
     flex-direction: column;
+    /* border-radius: 10px;
+    border-width: 0px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3); */
 }
 
 .task-board-right-section {
     flex: 1;
     display: flex;
     flex-direction: column;
+    /* border-radius: 10px;
+    border-width: 0px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3); */
 }
 
 .task-column {
@@ -298,5 +308,16 @@ h1 {
     padding: 10px;
     border: 1px solid black;
     border-radius: 10px;
+}
+
+.task-assignee-group {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.task-assignee-label {
+    font-size: 24px;
+    font-weight: bold;
 }
 </style>

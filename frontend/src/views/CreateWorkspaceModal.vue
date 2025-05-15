@@ -5,7 +5,7 @@
             <p class="create-label">作成するワークスペース名を入力してください。</p>
             <form>
                 <input class="name-input" v-model="workspaceName" placeholder="ワークスペース名" type="text" required />
-                <textarea class="description-input" v-model="workspaceDescription" placeholder="ワークスペースの説明(Option)" type="text" />
+                <textarea class="description-input" v-model="workspaceDescription" placeholder="ワークスペースの説明(Option)" type="text" @input="autoResize" ref="descriptionRef" />
                 <button class="create-button" @click="createWorkspace">作成</button>
                 <button class="cancel-button" @click="close">キャンセル</button>
             </form>
@@ -14,12 +14,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import axios from '../plugins/axios'
 
 const emit = defineEmits(['close'])
 const workspaceName = ref('')
 const workspaceDescription = ref('')
+
+const descriptionRef = ref<HTMLTextAreaElement | null>(null)
 
 const createWorkspace = async () => {
     if(!workspaceName.value.trim()) {
@@ -40,6 +42,13 @@ const createWorkspace = async () => {
     } catch (error) {
         alert('ワークスペースの作成に失敗しました。')
     }
+}
+
+const autoResize = () => {
+  if (descriptionRef.value) {
+    descriptionRef.value.style.height = 'auto'
+    descriptionRef.value.style.height = descriptionRef.value.scrollHeight + 'px'
+  }
 }
 
 const close = () => {

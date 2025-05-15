@@ -6,6 +6,7 @@
         </form>
         <form class="menu-bar">
             <button class="setting-button" @click="goToWorkspaceSetting">設定</button>
+            <button class="category-button" @click="goToCategoriesSetting">カテゴリ</button>
             <button class="mypage-button" @click="goToMyPage">マイページ</button>
             <button class="logout-button" @click="logout">ログアウト</button>
         </form>
@@ -106,6 +107,10 @@ onMounted(() => {
     fetchTasks()
 })
 
+const goToCategoriesSetting = () => {
+    router.push('/workspace/' + workspaceID + '/categories')
+}
+
 const goToWorkspaceSetting = () => {
     router.push('/workspace/' + workspaceID + '/setting')
 }
@@ -158,6 +163,12 @@ h1 {
     font-weight: bold;
 }
 
+.menu-bar {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+}
+
 .return-button {
     align-self: center;
     height: 30%;
@@ -169,12 +180,6 @@ h1 {
     border-radius: 4px;
     cursor: pointer;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3)
-}
-
-.menu-bar {
-    display: flex;
-    flex-direction: row;
-    gap: 30px;
 }
 
 .setting-button {
@@ -189,6 +194,20 @@ h1 {
     cursor: pointer;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3)
 }
+
+.category-button {
+    align-self: center;
+    height: 30%;
+    padding: 10px 20px;
+    font-size: 24px;
+    color: white;
+    background-color: plum;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3)
+}
+
 
 .mypage-button {
     padding: 5px 20px;
