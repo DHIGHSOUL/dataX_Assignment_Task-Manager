@@ -5,6 +5,7 @@ import MainPage from "../views/MainPage.vue"
 import WorkspacePage from "../views/WorkspacePage.vue"
 import MyPage from "../views/MyPage.vue"
 import WorkspaceSettingPage from "../views/WorkspaceSettingPage.vue"
+import TaskPage from "../views/TaskPage.vue"
 
 const routes = [
     {
@@ -39,6 +40,12 @@ const routes = [
         path: '/mypage',
         name: 'MyPage',
         component: MyPage,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/task/:id',
+        name: 'TaskPage',
+        component: TaskPage,
         meta: { requiresAuth: true }
     },
     {

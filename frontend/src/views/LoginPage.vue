@@ -76,7 +76,7 @@ const goToSingUpPage = () => {
 
 .login-page {
     text-align: center;
-    max-width: 400px;
+    max-width: 600px;
     width: 100%;
     padding: 20px;
     box-sizing: border-box;
@@ -87,12 +87,13 @@ const goToSingUpPage = () => {
 
 .login-page h1 {
     margin-bottom: 30px;
+    font-size: 48px;
 }
 
 form {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 20px;
 }
 
 input {
@@ -102,6 +103,7 @@ input {
     font-size: 16px;
     border-radius: 6px;
     border-width: 1px;
+    font-size: 24px;
 }
 
 .login-button {
@@ -113,7 +115,8 @@ input {
     background-color: white;
     border-radius: 6px;
     border-width: 0px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3)
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+    font-size: 24px;
 }
 
 .goto-signuppage-button {
@@ -124,5 +127,7 @@ input {
     text-decoration: underline;
     cursor: pointer;
     font-size: 14px;
+    margin-bottom: 30px;
+    font-size: 24px;
 }
 </style>

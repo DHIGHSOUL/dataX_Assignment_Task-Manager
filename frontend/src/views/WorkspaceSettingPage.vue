@@ -181,6 +181,7 @@ const goBack = () => {
 .close-button {
     align-self: center;
     padding: 7px 20px;
+    font-size: 24px;
     color: white;
     background-color: gray;
     border: none;

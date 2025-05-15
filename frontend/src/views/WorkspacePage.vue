@@ -15,10 +15,10 @@
             <h2 class="h2-pending">待機</h2>
             <div class="task-column-list">
                 <ul class="task-list">
-                    <li v-if="tasks.length === 0" class="task-item-dummy">
+                    <li class="task-item-dummy" @click="showCreateTaskModal = true">
                         <div class="task-title-dummy">+</div>
                     </li>
-                    <li v-for="task in tasks.filter(t => t.status === 'pending')" :key="task.id" class="task-item">
+                    <li v-for="task in tasks.filter(t => t.status === 'pending')" :key="task.id" class="task-item" @click="goToTaskPage(task.id)">
                         <div class="task-title">{{ task.name }}</div>
                         <div class="task-description">{{ task.description }}</div>
                         <div class="task-due-date">{{ task.due_date?.slice(0, 10) || null }}</div>
@@ -30,7 +30,7 @@
             <h2 class="h2-in-progress">進行中</h2>
             <div class="task-column-list">
                 <ul class="task-list">
-                    <li v-for="task in tasks.filter(t => t.status === 'in_progress')" :key="task.id" class="task-item">
+                    <li v-for="task in tasks.filter(t => t.status === 'in_progress')" :key="task.id" class="task-item" @click="goToTaskPage(task.id)">
                         <div class="task-title">{{ task.name }}</div>
                         <div class="task-description">{{ task.description }}</div>
                         <div class="task-due-date">{{ task.due_date?.slice(0, 10) || null }}</div>
@@ -42,7 +42,7 @@
             <h2 class="h2-completed">完了済み</h2>
             <div class="task-column-list">
                 <ul class="task-list">
-                    <li v-for="task in tasks.filter(t => t.status === 'completed')" :key="task.id" class="task-item">
+                    <li v-for="task in tasks.filter(t => t.status === 'completed')" :key="task.id" class="task-item" @click="goToTaskPage(task.id)">
                         <div class="task-title">{{ task.name }}</div>
                         <div class="task-description">{{ task.description }}</div>
                         <div class="task-due-date">{{ task.due_date?.slice(0, 10) || null }}</div>
@@ -51,12 +51,14 @@
             </div>
         </div>
     </div>
+    <CreateTaskModal v-if="showCreateTaskModal":workspaceID="workspaceID" @close="showCreateTaskModal = false" />
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from '../plugins/axios'
+import CreateTaskModal from './CreateTaskModal.vue'
 
 interface Task {
     id: number
@@ -67,7 +69,7 @@ interface Task {
     workspace_id: number
     workspace_category_id: number | null
     created_at_user: string | null
-    cerated_at: string
+    created_at: string
     updated_at: string
 }
 
@@ -76,6 +78,8 @@ const router = useRouter()
 
 const workspaceID = Number(route.params.id)
 const workspaceName = ref('')
+
+const showCreateTaskModal = ref(false)
 
 const tasks = ref<Task[]>([])
 
@@ -126,6 +130,11 @@ const logout = async () => {
     } catch {
         window.alert('ログアウトに失敗しました。');
     }
+}
+
+const goToTaskPage = (taskID: number) => {
+    localStorage.setItem('previousPageForTaskPage', '/workspace/' + workspaceID)
+    router.push(`/task/${taskID}`)
 }
 </script>
 

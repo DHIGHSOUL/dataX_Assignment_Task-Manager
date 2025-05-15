@@ -17,7 +17,7 @@
             </div>
             <div class="workspace-list-container">
                 <button class="workspace-card-item" v-for="ws in workspaces" :key="ws.id" @click="goToWorkspace(ws.id)">
-                    {{ ws.name }}
+                    <div class="workspace-card-item-content">{{ ws.name }}</div>
                 </button>
             </div>
         </template>
@@ -170,6 +170,7 @@ const goToMyPage = () => {
     flex-wrap: wrap;
     gap: 40px;
     margin-top: 20px;
+    justify-content: center;;
 }
 
 .workspace-button-group-in-list {
@@ -211,7 +212,7 @@ const goToMyPage = () => {
 }
 
 .workspace-card-item {
-    margin: 20px;
+    margin: 30px;
     background-color: white;
     border-radius: 16px;
     border-width: 0px;
@@ -222,6 +223,12 @@ const goToMyPage = () => {
     flex: 1 1 300px;
     max-width: 400px;
     text-align: center;
+}
+
+.workspace-card-item-content {
+    font-size: 24px;
+    font-weight: bold;
+    padding: 0px 40px;
 }
 
 /* ワークスペースがない場合 */

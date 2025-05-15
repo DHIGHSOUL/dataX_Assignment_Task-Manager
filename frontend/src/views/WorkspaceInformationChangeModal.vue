@@ -1,10 +1,12 @@
 <template>
     <div class="modal-overlay" @click.self="close">
         <div class="modal-content">
-            <h2>ワークスペース名変更</h2>
+            <h1>ワークスペース情報変更</h1>
             <p>変更する情報を入力してください。</p>
             <div class="change-name-group">
+                <p class="update-label">ワークスペース名</p>
                 <input class="name-input" v-model="workspaceName" placeholder="ワークスペース名" type="text" required />
+                <p class="update-label">ワークスペースの説明</p>
                 <textarea class="description-input" v-model="workspaceDescription" placeholder="ワークスペースの説明(Option)" type="text" />
                 <button type="submit" class="change-button" @click="changeWorkspaceInformation">更新</button>
                 <button type="button" class="cancel-button" @click="close">キャンセル</button>
@@ -60,6 +62,7 @@
             alert('ワークスペース情報を変更しました。')
             emit('update')
         } catch (error) {
+            console.error('ワークスペース情報の変更に失敗しました。', error)
             alert('ワークスペース情報の変更に失敗しました。')
         }
     }
@@ -86,7 +89,7 @@
     .modal-content {
         background-color: white;
         padding: 30px;
-        width: 300px;
+        width: 600px;
         text-align: center;
         border-radius: 12px;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -99,9 +102,24 @@
         gap: 20px;
     }
 
+    h1 {
+        font-size: 48px;
+        margin-bottom: 20px;
+    }
+
+    p {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .update-label {
+        font-size: 24px;
+        margin-bottom: 0px;
+    }
+
     .name-input {
-        padding: 5px 5px;
-        font-size: 16px;
+        padding: 10px 10px;
+        font-size: 24px;
         align-self: center;
         border: 1px solid black;
         border-radius: 4px;
@@ -109,17 +127,17 @@
 
     .description-input {
         width: 80%;
-    min-height: 60px;
-    font-size: 16px;
-    margin: 10px 0;
-    padding: 5px;
-    align-self: center;
-    border: 1px solid black;
-    border-radius: 4px;
+        min-height: 60px;
+        font-size: 24px;
+        padding: 30px 10px;
+        align-self: center;
+        border: 1px solid black;
+        border-radius: 4px;
     }
 
     .change-button {
         padding: 5px 20px;
+        font-size: 24px;
         color: white;
         background-color: #007bff;
         border: none;
@@ -130,11 +148,13 @@
 
     .cancel-button {
         padding: 5px 20px;
+        font-size: 24px;
         color: white;
         background-color: gray;
         border: none;
         border-radius: 4px;
         cursor: pointer;
-        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3)
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+        margin-bottom: 30px;
     }
 </style>
