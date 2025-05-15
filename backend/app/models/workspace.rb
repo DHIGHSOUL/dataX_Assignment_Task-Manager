@@ -3,7 +3,7 @@ class Workspace < ApplicationRecord
     has_many :users, through: :user_workspaces
 
     has_many :tasks, dependent: :destroy
-    has_many :categories, dependent: :destroy
+    has_many :workspace_categories, dependent: :destroy
 
     has_many :task_progresses, dependent: :destroy
 

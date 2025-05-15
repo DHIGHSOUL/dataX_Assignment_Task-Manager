@@ -16,10 +16,15 @@ Rails.application.routes.draw do
       end
 
       resources :tasks, only: [:index, :create]
+      resources :workspace_categories, only: [:index, :create]
     end
 
     resources :tasks, only: [:show, :destroy, :update] do
+      resources :task_assignments, only: [:create, :index]
+      delete 'task_assignments/:user_id', to: 'task_assignments#destroy'
     end
+
+    resources :workspace_categories, only: [:update, :destroy]
 
     post 'user_workspaces/join', to: 'user_workspaces#join'
     delete 'user_workspaces/:id/leave', to: 'user_workspaces#leave'

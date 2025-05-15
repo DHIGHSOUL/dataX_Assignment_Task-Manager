@@ -17,12 +17,20 @@
                         <p class="update-label">タスクの期限</p>
                         <input class="due-date-input" v-model="dueDate" type="date" required />
                     </div>
-                    <button class="update-button" @click="updateTask">作成</button>
+                    <div class="task-item-group">
+                        <p class="update-label">タスクの期限</p>
+                        <select class="status-input" v-model="status" required>
+                            <option value="pending">待機</option>
+                            <option value="in_progress">進行中</option>
+                            <option value="completed">完了済み</option>
+                        </select>
+                    </div>
+                    <button class="update-button" @click="updateTask">更新</button>
                     <button class="cancel-button" @click="close">キャンセル</button>
                 </form>
             </div>
             <div class="category-and-assignee-group">
-                <p class="create-label">タスクの担当者を選択してください。</p>
+                <p class="update-label">タスクの担当者を選択してください。</p>
                 <select class="assignee-select" v-model="assignee">
                     <option disabled value="">担当者を選択</option>
                     <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
@@ -41,6 +49,7 @@ const emit = defineEmits(['close', 'update'])
 const taskName = ref('')
 const taskDescription = ref('')
 const dueDate = ref('')
+const status = ref('')
 const assignee = ref('')
 const users = ref<{ id: number, name: string }[]>([])
 
@@ -63,6 +72,7 @@ const fetchOriginalTaskInfo = async () => {
         taskName.value = response.data.task.name
         taskDescription.value = response.data.task.description
         dueDate.value = response.data.task.due_date?.slice(0, 10) || ''
+        status.value = response.data.task.status
     } catch (error) {
         console.error('タスク情報の取得に失敗しました。', error)
     }
@@ -95,7 +105,7 @@ const updateTask = async () => {
                 name: taskName.value,
                 description: taskDescription.value,
                 due_date: dueDate.value,
-                status: 'pending'
+                status: status.value
             }
         })
         alert('タスク情報を変更しました。')
@@ -198,6 +208,15 @@ form {
 }
 
 .due-date-input {
+    padding: 5px 5px;
+    font-size: 24px;
+    align-self: center;
+    border: 1px solid black;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.status-input {
     padding: 5px 5px;
     font-size: 24px;
     align-self: center;

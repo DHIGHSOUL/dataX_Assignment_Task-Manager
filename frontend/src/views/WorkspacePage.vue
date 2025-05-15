@@ -217,6 +217,7 @@ h1 {
     flex-direction: row;
     justify-content: space-evenly;
     gap: 20px;
+    margin-bottom: 100px;
 }
 
 .task-column {
