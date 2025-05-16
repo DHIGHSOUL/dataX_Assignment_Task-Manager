@@ -97,6 +97,12 @@ const fetchOriginalTaskInfo = async () => {
         const originalStatus = response.data.task.status
         status.value = originalStatus
         selectedStatus.value = statusOptions.find(s => s.value === originalStatus) ?? null
+        const originalCategory = response.data.task.workspace_category
+        if (originalCategory) {
+            selectedCategory.value = categories.value.find(c => c.id === originalCategory.id) ?? null
+        } else {
+            selectedCategory.value = null
+        }
     } catch (error) {
         console.error('タスク情報の取得に失敗しました。', error)
     }
@@ -112,7 +118,7 @@ const fetchUsers = async () => {
     }
 }
 
-const fectchCategories = async () => {
+const fetchCategories = async () => {
     try {
         const response = await axios.get(`/api/workspaces/${props.workspaceID}/workspace_categories`)
         categories.value = response.data
@@ -131,7 +137,7 @@ const autoResize = () => {
 onMounted(() => {
     fetchOriginalTaskInfo()
     fetchUsers()
-    fectchCategories()
+    fetchCategories()
 })
 
 const updateTask = async () => {
@@ -140,16 +146,24 @@ const updateTask = async () => {
         return
     }
 
+    if (!status.value) {
+        alert('タスクの進行状況を選択してください。')
+        return
+    }
+
     try {
         await axios.patch('/api/tasks/' + taskID, {
             task: {
                 name: taskName.value,
                 description: taskDescription.value,
-                due_date: dueDate.value,
+                due_date: dueDate.value ? dueDate.value : null,
                 status: selectedStatus.value?.value,
+                workspace_category_id: selectedCategory.value?.id ?? null,
             }
         })
-        alert('タスク情報を変更しました。')
+        if(window.confirm('タスク情報を変更しました。') === true) {
+            alert('タスク情報を変更しました。')
+        }
         emit('update')
     } catch (error) {
         console.error('タスク情報の変更に失敗しました。', error)

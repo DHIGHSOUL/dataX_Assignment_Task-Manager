@@ -25,14 +25,11 @@
                 <form>
                     <div class="task-item-group">
                         <p class="create-label">タスクのカテゴリ</p>
-                        <label class="task-category">example</label>
+                        <Multiselect v-model="selectedCategory" :options="categories" label="name" track-by="id" placeholder="カテゴリを選択してください" />
                     </div>
                     <div class="task-item-group">
                         <p class="create-label">タスクの担当者を選択してください。</p>
-                        <select class="assignee-select" v-model="assignee">
-                            <option disabled value="">担当者を選択</option>
-                            <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
-                        </select>
+                        <Multiselect v-model="assignee" :options="users" label="name" track-by="id" placeholder="担当者を選択してください" />
                     </div>
                 </form>
             </div>
@@ -43,8 +40,19 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import axios from '../plugins/axios'
+import Multiselect from 'vue-multiselect'
+import 'vue-multiselect/dist/vue-multiselect.min.css'
 
 const emit = defineEmits(['close'])
+
+interface Category {
+    id: number
+    name: string
+    color: string
+    workspace_id: number
+    created_at: string
+    updated_at: string
+}
 
 const taskName = ref('')
 const taskDescription = ref('')
@@ -54,6 +62,8 @@ const assignee = ref('')
 const users = ref<{ id: number, name: string }[]>([])
 
 const descriptionRef = ref<HTMLTextAreaElement | null>(null)
+const categories = ref<Category[]>([])
+const selectedCategory = ref<Category | null>(null)
 
 const props = defineProps({
     workspaceID: {
@@ -71,6 +81,15 @@ const fetchUsers = async () => {
     }
 }
 
+const fetchCategories = async () => {
+    try {
+        const response = await axios.get(`/api/workspaces/${props.workspaceID}/workspace_categories`)
+        categories.value = response.data
+    } catch (error) {
+        console.error('カテゴリの取得に失敗しました。', error)
+    }
+}
+
 const autoResize = () => {
   if (descriptionRef.value) {
     descriptionRef.value.style.height = 'auto'
@@ -80,6 +99,7 @@ const autoResize = () => {
 
 onMounted(() => {
     fetchUsers()
+    fetchCategories()
 })
 
 const createTask = async () => {
@@ -93,8 +113,9 @@ const createTask = async () => {
             task: {
                 name: taskName.value,
                 description: taskDescription.value,
-                due_date: dueDate.value,
-                status: 'pending'
+                due_date: dueDate.value ? dueDate.value : null,
+                status: 'pending',
+                workspace_category_id: selectedCategory.value ? selectedCategory.value.id : null,
             }
         })
         alert('タスクを作成しました。')
@@ -110,6 +131,20 @@ const close = () => {
 </script>
 
 <style scoped>
+::v-deep(.multiselect__placeholder) {
+  font-size: 18px;
+  color: #888;
+}
+
+::v-deep(.multiselect) {
+  width: 100%;
+  font-size: 24px;
+}
+
+::v-deep(.multiselect__input) {
+  font-size: 24px;
+}
+
 .modal-overlay {
     position: fixed;
     display: flex;

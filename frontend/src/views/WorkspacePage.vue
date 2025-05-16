@@ -23,6 +23,7 @@
                         <div class="task-title">{{ task.name }}</div>
                         <div class="task-description">{{ task.description }}</div>
                         <div class="task-due-date">{{ task.due_date?.slice(0, 10) || null }}</div>
+                        <div v-if="task.workspace_category_id" :style="getCategoryStyle(task.workspace_category_id), { backgroundColor: getCategoryColor(task.workspace_category_id) }" class="task-category">{{ getCategoryName(task.workspace_category_id) }}</div>
                     </li>
                 </ul>
             </div>
@@ -35,6 +36,7 @@
                         <div class="task-title">{{ task.name }}</div>
                         <div class="task-description">{{ task.description }}</div>
                         <div class="task-due-date">{{ task.due_date?.slice(0, 10) || null }}</div>
+                        <div v-if="task.workspace_category_id" :style="getCategoryStyle(task.workspace_category_id), { backgroundColor: getCategoryColor(task.workspace_category_id) }" class="task-category">{{ getCategoryName(task.workspace_category_id) }}</div>
                     </li>
                 </ul>
             </div>
@@ -47,6 +49,7 @@
                         <div class="task-title">{{ task.name }}</div>
                         <div class="task-description">{{ task.description }}</div>
                         <div class="task-due-date">{{ task.due_date?.slice(0, 10) || null }}</div>
+                        <div v-if="task.workspace_category_id" :style="getCategoryStyle(task.workspace_category_id), { backgroundColor: getCategoryColor(task.workspace_category_id) }" class="task-category">{{ getCategoryName(task.workspace_category_id) }}</div>
                     </li>
                 </ul>
             </div>
@@ -56,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from '../plugins/axios'
 import CreateTaskModal from './CreateTaskModal.vue'
@@ -74,11 +77,21 @@ interface Task {
     updated_at: string
 }
 
+interface Category {
+    id: number
+    name: string
+    color: string
+    workspace_id: number
+    created_at: string
+    updated_at: string
+}
+
 const route = useRoute()
 const router = useRouter()
 
 const workspaceID = Number(route.params.id)
 const workspaceName = ref('')
+const categories = ref<Category[]>([])
 
 const showCreateTaskModal = ref(false)
 
@@ -102,9 +115,45 @@ const fetchTasks = async () => {
     }
 }
 
+const fecthCategories = async () => {
+    try {
+        const response = await axios.get(`/api/workspaces/${workspaceID}/workspace_categories`)
+        categories.value = response.data
+    } catch (error) {
+        console.error('カテゴリの取得に失敗しました。', error)
+    }
+}
+
+const getCategoryName = (categoryID: number | null): string => {
+    const category = categories.value.find(c => c.id === categoryID)
+    return category ? category.name : ''
+}
+
+const getCategoryColor = (categoryID: number | null): string => {
+    const category = categories.value.find(c => c.id === categoryID)
+    return category && category.color ? `#${category.color}` : 'transparent'
+}
+
+const getCategoryStyle = (categoryID: number | null) => {
+    const category = categories.value.find(c => c.id === categoryID)
+    const hexColor = category && category.color ? `#${category.color}` : '#ffffff';
+
+    const r = parseInt(hexColor.slice(1, 3), 16)
+    const g = parseInt(hexColor.slice(3, 5), 16)
+    const b = parseInt(hexColor.slice(5, 7), 16)
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000
+    const textColor = brightness > 150 ? '#000000' : '#ffffff'
+
+    return {
+        backgroundColor: hexColor,
+        color: textColor
+    }
+}
+
 onMounted(() => {
     fetchWorkspaceName()
     fetchTasks()
+    fecthCategories()
 })
 
 const goToCategoriesSetting = () => {
@@ -341,5 +390,14 @@ h1 {
 .task-due-date {
     font-size: 18px;
     color: #888;
+}
+
+.task-category {
+    padding: 5px 10px;
+    font-size: 18px;
+    color: white;
+    border-radius: 4px;
+    margin-top: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
 }
 </style>
