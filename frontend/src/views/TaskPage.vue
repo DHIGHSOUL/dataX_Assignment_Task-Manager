@@ -33,6 +33,10 @@
                 <h2 class="task-info-label">カテゴリ＆担当者</h2>
                 <div class="task-category-group">
                     <p class="task-category-label">タスクのカテゴリ</p>
+                    <label class="task-category" :style="getCategoryStyle(categoryColor)">{{ categoryName || 'カテゴリがありません' }}</label>
+                </div>
+                <div class="task-assignee-group">
+                    <p class="task-assignee-label">タスクの担当者</p>
                     <label class="task-category">example</label>
                 </div>
             </form>
@@ -55,6 +59,8 @@ const taskID = Number(route.params.id)
 const taskDescription = ref('')
 const due_date = ref('')
 const status = ref('')
+const categoryColor = ref<string | null>(null)
+const categoryName = ref('')
 
 const taskName = ref('')
 
@@ -73,12 +79,32 @@ const fetchTaskInfo = async () => {
         due_date.value = response.data.task.due_date
         status.value = response.data.task.status
         workspaceID.value = response.data.task.workspace_id
+        if (response.data.task.workspace_category) {
+            categoryColor.value = response.data.task.workspace_category.color
+            categoryName.value = response.data.task.workspace_category.name
+        } else {
+            categoryColor.value = ''
+            categoryName.value = ''
+        }
         console.log('タスク情報:', response.data)
     } catch (error) {
         console.error('taskIDが正しく取得できませんでした。')
         console.error('タスク情報の取得に失敗しました。', error)
     }
 }
+
+const getCategoryStyle = (hex: string | null) => {
+    const hexColor = hex ? `#${hex}` : '#ffffff';
+    const r = parseInt(hexColor.slice(1, 3), 16);
+    const g = parseInt(hexColor.slice(3, 5), 16);
+    const b = parseInt(hexColor.slice(5, 7), 16);
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    const textColor = brightness > 150 ? '#000000' : '#ffffff';
+    return {
+      backgroundColor: hexColor,
+      color: textColor,
+    };
+};
 
 onMounted(() => {
     fetchTaskInfo()
@@ -195,12 +221,18 @@ h1 {
     flex: 1;
     display: flex;
     flex-direction: column;
+    /* border-radius: 10px;
+    border-width: 0px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3); */
 }
 
 .task-board-right-section {
     flex: 1;
     display: flex;
     flex-direction: column;
+    /* border-radius: 10px;
+    border-width: 0px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3); */
 }
 
 .task-column {
@@ -298,5 +330,16 @@ h1 {
     padding: 10px;
     border: 1px solid black;
     border-radius: 10px;
+}
+
+.task-assignee-group {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.task-assignee-label {
+    font-size: 24px;
+    font-weight: bold;
 }
 </style>

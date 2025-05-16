@@ -16,6 +16,15 @@ class Api::WorkspaceCategoriesController < ApplicationController
         end
     end
 
+    def show
+        category = WorkspaceCategory.find(params[:id])
+        if category
+            render json: category, status: :ok
+        else
+            render json: { error: 'Category not found' }, status: :not_found
+        end
+    end
+
     def update
         category = WorkspaceCategory.find(params[:id])
         if category.update(category_params)

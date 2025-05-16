@@ -7,7 +7,7 @@
                 <p class="update-label">ワークスペース名</p>
                 <input class="name-input" v-model="workspaceName" placeholder="ワークスペース名" type="text" required />
                 <p class="update-label">ワークスペースの説明</p>
-                <textarea class="description-input" v-model="workspaceDescription" placeholder="ワークスペースの説明(Option)" type="text" />
+                <textarea class="description-input" v-model="workspaceDescription" placeholder="ワークスペースの説明(Option)" type="text" @input="autoResize" ref="descriptionRef" />
                 <button type="submit" class="change-button" @click="changeWorkspaceInformation">更新</button>
                 <button type="button" class="cancel-button" @click="close">キャンセル</button>
             </div>
@@ -16,9 +16,8 @@
 </template>
 
 <script setup lang="ts">
-    import { ref } from 'vue'
+    import { ref, onMounted, watch } from 'vue'
     import axios from '../plugins/axios'
-    import { onMounted } from 'vue'
 
     const emit = defineEmits(['close', 'update'])
     const workspaceName = ref('')
@@ -30,6 +29,8 @@
         }
     })
 
+    const descriptionRef = ref<HTMLTextAreaElement | null>(null)
+
     const workspaceID = props.workspaceID
 
     const fetchOriginalWorkspaceInfo = async () => {
@@ -39,6 +40,13 @@
             workspaceDescription.value = response.data.description
         } catch (error) {
             console.error('ワークスペース情報の取得に失敗しました。', error)
+        }
+    }
+
+    const autoResize = () => {
+        if (descriptionRef.value) {
+            descriptionRef.value.style.height = 'auto'
+            descriptionRef.value.style.height = descriptionRef.value.scrollHeight + 'px'
         }
     }
 

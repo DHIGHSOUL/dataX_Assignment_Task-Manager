@@ -21,7 +21,7 @@ class Api::TasksController < ApplicationController
     end
 
     def show
-        render json: { task: @task }, status: :ok
+        render json: { task: @task.as_json(include: { workspace_category: { only: [:id, :name, :color] } }) }, status: :ok
     end
 
     def update
@@ -40,7 +40,7 @@ class Api::TasksController < ApplicationController
     private
 
     def task_params
-        params.require(:task).permit(:name, :description, :status, :due_date)
+        params.require(:task).permit(:name, :description, :status, :due_date, :workspace_category_id)
     end
 
     def set_task

@@ -80,11 +80,11 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 20px;
+        gap: 30px;
     }
 
     .name-input {
-        padding: 5px 5px;
+        padding: 10px 10px;
         font-size: 24px;
         align-self: center;
         border: 1px solid black;
