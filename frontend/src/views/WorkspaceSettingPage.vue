@@ -17,6 +17,10 @@
                     <label class="workspace-invitation-link">{{ invitationLink }}</label>
                 </div>
                 <button class="close-button" @click="goBack">閉じる</button>
+                <div class="destruction-button-group">
+                    <button class="delete-button" @click="deleteWorkspace">削除</button>
+                    <button class="leave-button" @click="leaveWorkspace">退会</button>
+                </div>"
             </div>
         </div>
     </div>
@@ -55,6 +59,32 @@ const fetchInvitationLink = async () => {
         invitationLink.value = response.data.code
     } catch (error) {
         console.error('招待リンクの取得に失敗しました。', error)
+    }
+}
+
+const deleteWorkspace = async () => {
+    if (!confirm('本当にワークスペースを削除しますか？')) {
+        return
+    }
+
+    try {
+        await axios.delete(`/api/workspaces/${workspaceID}`)
+        router.push('/main')
+    } catch (error) {
+        console.error('ワークスペースの削除に失敗しました。', error)
+    }
+}
+
+const leaveWorkspace = async () => {
+    if (!confirm('本当にワークスペースを退会しますか？')) {
+        return
+    }
+
+    try {
+        await axios.delete(`/api/user_workspaces/${workspaceID}/leave`)
+        router.push('/main')
+    } catch (error) {
+        console.error('ワークスペースの削除に失敗しました。', error)
     }
 }
 
@@ -180,7 +210,7 @@ const goBack = () => {
 
 .close-button {
     align-self: center;
-    padding: 7px 20px;
+    padding: 10px 20px;
     font-size: 24px;
     color: white;
     background-color: gray;
@@ -188,6 +218,37 @@ const goBack = () => {
     border-radius: 4px;
     cursor: pointer;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.destruction-button-group {
+    display: flex;
+    flex-direction: row;
+    align-self: center;
+    gap: 50px;
     margin-bottom: 30px;
+}
+
+.delete-button {
+    align-self: center;
+    padding: 10px 20px;
+    font-size: 24px;
+    color: white;
+    background-color: red;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.leave-button {
+    align-self: center;
+    padding: 7px 20px;
+    font-size: 24px;
+    color: white;
+    background-color: #f44336;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
 }
 </style>

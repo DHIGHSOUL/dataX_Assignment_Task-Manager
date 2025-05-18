@@ -24,6 +24,19 @@ class Api::TasksController < ApplicationController
         render json: { task: @task.as_json(include: { workspace_category: { only: [:id, :name, :color] } }) }, status: :ok
     end
 
+    def filter
+        tasks = Task.where(workspace_id: params[:workspace_id])
+
+        if params[:search_query].present?
+            query = "%#{params[:search_query]}%"
+            tasks = tasks.left_joins(:workspace_category, :task_assignments => :user)
+            .where("tasks.name LIKE :q OR workspace_categories.name LIKE :q OR users.name LIKE :q", q: query)
+            .distinct
+        end
+
+        render json: { tasks: tasks }
+    end
+
     def update
         if @task.update(task_params)
             render json: { task: @task }, status: :ok

@@ -34,11 +34,6 @@
                     <div class="task-item-group-assignee">
                         <p class="update-label">タスクの担当者を選択してください。</p>
                         <Multiselect v-model="assignees" :options="users" :multiple="true" label="name" track-by="id" placeholder="担当者を選択してください" />
-                        <ul>
-                            <li v-for="assignee in assignees" :key="assignee.id">
-                                {{ assignee.name }}
-                            </li>
-                        </ul>
                     </div>
                 </form>
             </div>

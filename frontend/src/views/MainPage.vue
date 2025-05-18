@@ -170,7 +170,7 @@ const goToMyPage = () => {
     flex-wrap: wrap;
     gap: 40px;
     margin-top: 20px;
-    justify-content: center;;
+    justify-content: flex-start;
 }
 
 .workspace-button-group-in-list {

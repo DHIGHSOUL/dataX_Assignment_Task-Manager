@@ -15,7 +15,14 @@ Rails.application.routes.draw do
         get :invitation_code
       end
 
-      resources :tasks, only: [:index, :create]
+      get 'user_task_progresses', to: 'user_task_progresses#index'
+
+      resources :tasks, only: [:index, :create] do
+        collection do
+          post :filter
+        end
+      end
+
       resources :workspace_categories, only: [:index, :create]
     end
 

@@ -26,7 +26,13 @@ class Api::UserWorkspacesController < ApplicationController
   def leave
     workspace = current_user.workspaces.find(params[:id])
     if workspace
+      TaskAssignment
+        .joins(:task)
+        .where(user_id: current_user.id, tasks: { workspace_id: workspace.id })
+        .destroy_all
+
       current_user.workspaces.delete(workspace)
+
       render json: { message: 'Left workspace successfully' }
     else
       render json: { error: 'Workspace not found' }, status: :not_found

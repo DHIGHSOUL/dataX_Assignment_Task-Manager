@@ -11,6 +11,10 @@
             <button class="logout-button" @click="logout">ログアウト</button>
         </form>
     </div>
+    <div class="search-bar">
+        <input type="text" v-model="searchQuery" placeholder="タスク名、カテゴリ、担当者でタスクを検索" class="search-input" />
+        <button type="button" class="search-button" @click="filterTasks">検索</button>
+    </div>
     <div class="task-board-section">
         <div class="task-column">
             <h2 class="h2-pending">待機</h2>
@@ -19,11 +23,14 @@
                     <li class="task-item-dummy" @click="showCreateTaskModal = true">
                         <div class="task-title-dummy">+</div>
                     </li>
-                    <li v-for="task in tasks.filter(t => t.status === 'pending')" :key="task.id" class="task-item" @click="goToTaskPage(task.id)">
+                    <li v-for="task in pendingTasks" :key="task.id" class="task-item" @click="goToTaskPage(task.id)">
                         <div class="task-title">{{ task.name }}</div>
                         <div class="task-description">{{ task.description }}</div>
                         <div class="task-due-date">{{ task.due_date?.slice(0, 10) || null }}</div>
                         <div v-if="task.workspace_category_id" :style="getCategoryStyle(task.workspace_category_id), { backgroundColor: getCategoryColor(task.workspace_category_id) }" class="task-category">{{ getCategoryName(task.workspace_category_id) }}</div>
+                        <div class="task-assignments-count">
+                            <p>担当者{{ taskAssignments[task.id]?.length }}名</p>
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -32,11 +39,14 @@
             <h2 class="h2-in-progress">進行中</h2>
             <div class="task-column-list">
                 <ul class="task-list">
-                    <li v-for="task in tasks.filter(t => t.status === 'in_progress')" :key="task.id" class="task-item" @click="goToTaskPage(task.id)">
+                    <li v-for="task in inProgressTasks" :key="task.id" class="task-item" @click="goToTaskPage(task.id)">
                         <div class="task-title">{{ task.name }}</div>
                         <div class="task-description">{{ task.description }}</div>
                         <div class="task-due-date">{{ task.due_date?.slice(0, 10) || null }}</div>
                         <div v-if="task.workspace_category_id" :style="getCategoryStyle(task.workspace_category_id), { backgroundColor: getCategoryColor(task.workspace_category_id) }" class="task-category">{{ getCategoryName(task.workspace_category_id) }}</div>
+                        <div class="task-assignments-count">
+                            <p>担当者{{ taskAssignments[task.id]?.length }}名</p>
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -45,11 +55,27 @@
             <h2 class="h2-completed">完了済み</h2>
             <div class="task-column-list">
                 <ul class="task-list">
-                    <li v-for="task in tasks.filter(t => t.status === 'completed')" :key="task.id" class="task-item" @click="goToTaskPage(task.id)">
+                    <li v-for="task in completedTasks" :key="task.id" class="task-item" @click="goToTaskPage(task.id)">
                         <div class="task-title">{{ task.name }}</div>
                         <div class="task-description">{{ task.description }}</div>
                         <div class="task-due-date">{{ task.due_date?.slice(0, 10) || null }}</div>
                         <div v-if="task.workspace_category_id" :style="getCategoryStyle(task.workspace_category_id), { backgroundColor: getCategoryColor(task.workspace_category_id) }" class="task-category">{{ getCategoryName(task.workspace_category_id) }}</div>
+                        <div class="task-assignments-count">
+                            <p>担当者{{ taskAssignments[task.id]?.length }}名</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="assignments-column">
+            <h2 class="h2-assignments">担当者</h2>
+            <div class="task-column-list">
+                <ul class="task-list">
+                    <li v-for="user in workspaceUsers" :key="user.id" class="task-item">
+                        <div class="task-title">{{ user.name }}</div>
+                        <div class="task-progress">
+                            {{ userTaskProgress[user.id] ?? '0' }}%
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -86,12 +112,21 @@ interface Category {
     updated_at: string
 }
 
+interface User {
+    id: number
+    name: string
+}
+
 const route = useRoute()
 const router = useRouter()
 
 const workspaceID = Number(route.params.id)
 const workspaceName = ref('')
 const categories = ref<Category[]>([])
+const taskAssignments = ref< {[taskID: number]: User[]} >({})
+const searchQuery = ref('')
+const workspaceUsers = ref<User[]>([])
+const userTaskProgress = ref<{ [userID: number]: number }>({})
 
 const showCreateTaskModal = ref(false)
 
@@ -124,6 +159,51 @@ const fecthCategories = async () => {
     }
 }
 
+const fetchAssignments = async () => {
+    const promises = tasks.value.map(async (task) => {
+        const taskID = task.id
+        try {
+            const response = await axios.get(`/api/tasks/${taskID}/task_assignments`)
+            taskAssignments.value[taskID] = response.data
+        } catch (error) {
+            console.error('担当者の取得に失敗しました。', error)
+        }
+    })
+
+    await Promise.all(promises)
+}
+
+const fetchWorkspaceUsers = async () => {
+    try {
+        const response = await axios.get(`/api/workspaces/${workspaceID}/users`)
+        workspaceUsers.value = response.data
+    } catch (error) {
+        console.error('ワークスペースユーザーの取得に失敗しました。', error)
+    }
+}
+
+const fetchUserTaskProgress = async () => {
+    try {
+        const response = await axios.get(`/api/workspaces/${workspaceID}/user_task_progresses`)
+        const progressMap: { [userID: number]: number } = {}
+        response.data.forEach((item: { user_id: number; progress: number }) => {
+            progressMap[item.user_id] = item.progress
+        })
+        userTaskProgress.value = progressMap
+    } catch (error) {
+        console.error('ユーザーのタスク進捗の取得に失敗しました。', error)
+    }
+}
+
+const fetchTaskProgresses = async () => {
+    const response = await axios.get(`/api/workspaces/${workspaceID}/user_task_progresses`)
+    const progressMap: { [userID: number]: number } = {}
+    response.data.forEach((item: { user_id: number; progress: number }) => {
+        progressMap[item.user_id] = item.progress
+    })
+    userTaskProgress.value = progressMap
+}
+
 const getCategoryName = (categoryID: number | null): string => {
     const category = categories.value.find(c => c.id === categoryID)
     return category ? category.name : ''
@@ -154,7 +234,39 @@ onMounted(async () => {
     await fetchWorkspaceName()
     await fecthCategories()
     await fetchTasks()
+    await fetchAssignments()
+    await fetchWorkspaceUsers()
+    await fetchUserTaskProgress()
+    await fetchTaskProgresses()
 })
+
+const pendingTasks = computed(() => {
+    // console.log('pendingTasks', tasks.value)
+    return tasks.value.filter(task => task.status === 'pending')
+})
+
+const inProgressTasks = computed(() => {
+    // console.log('inProgressTasks', tasks.value)
+    return tasks.value.filter(task => task.status === 'in_progress')
+})
+
+const completedTasks = computed(() => {
+    // console.log('completedTasks', tasks.value)
+    return tasks.value.filter(task => task.status === 'completed')
+})
+
+const filterTasks = async () => {
+    try {
+        const response = await axios.post(`/api/workspaces/${workspaceID}/tasks/filter`, {
+            workspace_id: workspaceID,
+            search_query: searchQuery.value
+        })
+        console.log('フィルタリングリクエスト', response.data)
+        tasks.value = response.data.tasks
+    } catch (error) {
+        console.error('タスクのフィルタリングに失敗しました。', error)
+    }
+}
 
 const goToCategoriesSetting = () => {
     router.push('/workspace/' + workspaceID + '/categories')
@@ -192,7 +304,12 @@ const goToTaskPage = (taskID: number) => {
 }
 
 const handleUpdate = async () => {
+    await fetchWorkspaceName()
+    await fecthCategories()
     await fetchTasks()
+    await fetchAssignments()
+    await fetchWorkspaceUsers()
+    await fetchUserTaskProgress()
     showCreateTaskModal.value = false
 }
 </script>
@@ -285,6 +402,36 @@ h1 {
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
 }
 
+.search-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+    margin: 20px;
+    gap: 20px;
+    font-size: 24px;
+}
+
+.search-input {
+    width: 80%;
+    padding: 10px 20px;
+    font-size: 24px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.search-button {
+    padding: 10px 20px;
+    font-size: 24px;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+}
+
 .task-board-section {
     display: flex;
     flex-direction: row;
@@ -327,6 +474,15 @@ h1 {
     align-self: center;
     border-radius: 10px;
     background-color: #b5dff3;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.h2-assignments {
+    padding: 10px 30px;
+    margin-bottom: 30px;
+    font-size: 36px;
+    align-self: center;
+    border-radius: 10px;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
 }
 
@@ -384,6 +540,7 @@ h1 {
 
 .task-title {
     font-weight: bold;
+    margin-top: 10px;
     margin-bottom: 10px;
 }
 
@@ -404,5 +561,23 @@ h1 {
     border-radius: 4px;
     margin-top: 10px;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.task-assignments-count {
+    font-size: 18px;
+    color: #888;
+}
+
+.assignments-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.task-progress {
+    font-size: 18px;
+    color: #888;
+    margin-top: 10px;
 }
 </style>

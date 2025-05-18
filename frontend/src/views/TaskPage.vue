@@ -42,7 +42,7 @@
                         <label v-for="assignee in assignees" :key="assignee.id" class="task-assignee">{{ assignee.name }}</label>
                     </div>
                     <div v-else class="task-assignee">
-                        <label>担当者がいません</label>
+                        <label>担当者がありません</label>
                     </div>
                 </div>
             </form>
