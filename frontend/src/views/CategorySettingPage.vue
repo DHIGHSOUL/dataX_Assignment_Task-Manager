@@ -141,12 +141,19 @@ h2 {
     flex: 1 1 300px;
     max-width: 380px;
     text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .category-card-item-content {
     font-size: 24px;
     font-weight: bold;
     padding: 0px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
 }
 
 .category-item-dummy {

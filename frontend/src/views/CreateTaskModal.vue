@@ -17,9 +17,9 @@
                         <p class="create-label">タスクの期限</p>
                         <input class="due-date-input" v-model="dueDate" type="date" required />
                     </div>
-                    <button class="create-button" @click="createTask">作成</button>
-                    <button class="cancel-button" @click="close">キャンセル</button>
-            </form>
+                    <button type="button" class="create-button" @click="createTask">作成</button>
+                    <button type="button" class="cancel-button" @click="close">キャンセル</button>
+                </form>
             </div>
             <div class="category-and-assignee-group">
                 <form>
@@ -27,9 +27,9 @@
                         <p class="create-label">タスクのカテゴリ</p>
                         <Multiselect v-model="selectedCategory" :options="categories" label="name" track-by="id" placeholder="カテゴリを選択してください" />
                     </div>
-                    <div class="task-item-group">
+                    <div class="task-item-group-assignee">
                         <p class="create-label">タスクの担当者を選択してください。</p>
-                        <Multiselect v-model="assignee" :options="users" label="name" track-by="id" placeholder="担当者を選択してください" />
+                        <Multiselect v-model="assignee" :options="users" :multiple="true" label="name" track-by="id" placeholder="担当者を選択してください" />
                     </div>
                 </form>
             </div>
@@ -43,7 +43,7 @@ import axios from '../plugins/axios'
 import Multiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.min.css'
 
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close', 'update'])
 
 interface Category {
     id: number
@@ -58,8 +58,8 @@ const taskName = ref('')
 const taskDescription = ref('')
 const dueDate = ref('')
 // const selectedCategory = ref('')
-const assignee = ref('')
-const users = ref<{ id: number, name: string }[]>([])
+const assignee = ref<{ id: number, name: string }[]>([])
+const users = ref<{ id: number, name: string, email: string }[]>([])
 
 const descriptionRef = ref<HTMLTextAreaElement | null>(null)
 const categories = ref<Category[]>([])
@@ -97,9 +97,9 @@ const autoResize = () => {
   }
 }
 
-onMounted(() => {
-    fetchUsers()
-    fetchCategories()
+onMounted(async () => {
+    await fetchCategories()
+    await fetchUsers()
 })
 
 const createTask = async () => {
@@ -109,7 +109,7 @@ const createTask = async () => {
     }
 
     try {
-        await axios.post(`/api/workspaces/${props.workspaceID}/tasks`, {
+        const taskResponse = await axios.post(`/api/workspaces/${props.workspaceID}/tasks`, {
             task: {
                 name: taskName.value,
                 description: taskDescription.value,
@@ -118,10 +118,26 @@ const createTask = async () => {
                 workspace_category_id: selectedCategory.value ? selectedCategory.value.id : null,
             }
         })
-        alert('タスクを作成しました。')
-        emit('close')
+
+        addAssignments(taskResponse.data.task.id)
     } catch (error) {
         alert('タスクの作成に失敗しました。')
+    }
+}
+
+const addAssignments = async (taskID: number) => {
+    try {
+        if (assignee.value.length > 0) {
+            await Promise.all(assignee.value.map(async user => {
+                await axios.post(`/api/tasks/${taskID}/task_assignments`, {
+                    user_id: user.id
+                })
+            }))
+        }
+        alert('タスクを作成しました。')
+        emit('update')
+    } catch (error) {
+        alert('タスクの担当者の割り当てに失敗しました。')
     }
 }
 
@@ -194,6 +210,7 @@ p {
 .create-label {
     font-size: 24px;
     margin-bottom: 20px;
+    font-weight: bold;
 }
 
 form {
@@ -210,6 +227,14 @@ form {
     align-items: center;
 }
 
+.task-item-group-assignee {
+    display: flex;
+    width: 80%;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
 .name-input {
     padding: 10px 10px;
     font-size: 24px;
@@ -219,10 +244,10 @@ form {
 }
 
 .description-input {
-    width: 80%;
+    width: 100%;
     min-height: 60px;
     font-size: 24px;
-    padding: 20px 10px;
+    padding: 10px 10px;
     align-self: center;
     border: 1px solid black;
     border-radius: 4px;

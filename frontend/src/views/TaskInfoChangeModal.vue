@@ -21,19 +21,26 @@
                         <p class="update-label">タスクの進行状況</p>
                         <Multiselect class="status-input" v-model="selectedStatus" :options="statusOptions" label="text" track-by="value" placeholder="タスクの進行状況を選択してください" />
                     </div>
-                    <button class="update-button" @click="updateTask">更新</button>
-                    <button class="cancel-button" @click="close">キャンセル</button>
+                    <button type="button" class="update-button" @click="updateTask">更新</button>
+                    <button type="button" class="cancel-button" @click="close">キャンセル</button>
                 </form>
             </div>
             <div class="category-and-assignee-group">
-                <div class="task-category-selection">
-                    <p class="update-label">タスクのカテゴリ</p>
-                    <Multiselect v-model="selectedCategory" :options="categories" label="name" track-by="id" placeholder="カテゴリを選択してください" />
-                </div>
-                <div class="task-assignee-selection">
-                    <p class="update-label">タスクの担当者を選択してください。</p>
-                <Multiselect v-model="assignee" :options="users" label="name" track-by="id" placeholder="担当者を選択してください" />
-                </div>
+                <form>
+                    <div class="task-item-group">
+                        <p class="update-label">タスクのカテゴリ</p>
+                        <Multiselect v-model="selectedCategory" :options="categories" label="name" track-by="id" placeholder="カテゴリを選択してください" />
+                    </div>
+                    <div class="task-item-group-assignee">
+                        <p class="update-label">タスクの担当者を選択してください。</p>
+                        <Multiselect v-model="assignees" :options="users" :multiple="true" label="name" track-by="id" placeholder="担当者を選択してください" />
+                        <ul>
+                            <li v-for="assignee in assignees" :key="assignee.id">
+                                {{ assignee.name }}
+                            </li>
+                        </ul>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -50,7 +57,9 @@ const taskName = ref('')
 const taskDescription = ref('')
 const dueDate = ref('')
 const status = ref('')
-const assignee = ref('')
+const assignees = ref<{ id: number, name: string }[]>([])
+const originalAssignees = ref<{ id: number, user_id: number, name: string }[]>([])
+const taskAssignments = ref<{ id: number, user_id: number, name: string }[]>([])
 const users = ref<{ id: number, name: string }[]>([])
 
 const descriptionRef = ref<HTMLTextAreaElement | null>(null)
@@ -110,7 +119,6 @@ const fetchOriginalTaskInfo = async () => {
 
 const fetchUsers = async () => {
     try {
-        console.log('workspaceID:', props.workspaceID)
         const response = await axios.get(`/api/workspaces/${props.workspaceID}/users`)
         users.value = response.data
     } catch (error) {
@@ -127,6 +135,26 @@ const fetchCategories = async () => {
     }
 }
 
+const fetchOriginalAssignees = async () => {
+    try {
+        const response = await axios.get(`/api/tasks/${taskID}/task_assignments`)
+        taskAssignments.value = response.data
+
+        console.log('taskAssignments:', taskAssignments.value)
+
+        originalAssignees.value = response.data.map((res: any) => ({
+            user_id: res.user_id,
+            name: res.name
+        }))
+
+        assignees.value = users.value.filter(user => {
+            return originalAssignees.value.some(assignee => assignee.user_id === user.id)
+        })
+    } catch (error) {
+        console.error('担当者の取得に失敗しました。', error)
+    }
+}
+
 const autoResize = () => {
   if (descriptionRef.value) {
     descriptionRef.value.style.height = 'auto'
@@ -134,10 +162,11 @@ const autoResize = () => {
   }
 }
 
-onMounted(() => {
-    fetchOriginalTaskInfo()
-    fetchUsers()
-    fetchCategories()
+onMounted(async () => {
+    await fetchCategories()
+    await fetchUsers()
+    await fetchOriginalTaskInfo()
+    await fetchOriginalAssignees()
 })
 
 const updateTask = async () => {
@@ -161,14 +190,47 @@ const updateTask = async () => {
                 workspace_category_id: selectedCategory.value?.id ?? null,
             }
         })
+
+        await updateTaskAssignments()
+
         if(window.confirm('タスク情報を変更しました。') === true) {
-            alert('タスク情報を変更しました。')
+            emit('update')
         }
-        emit('update')
     } catch (error) {
         console.error('タスク情報の変更に失敗しました。', error)
         alert('タスク情報の変更に失敗しました。')
     }
+}
+
+const updateTaskAssignments = async () => {
+    const currentIDs = assignees.value.map(user => user.id)
+    const originalIDs = originalAssignees.value.map(user => user.user_id)
+
+    const toAddIDs = currentIDs.filter(id => !originalIDs.includes(id))
+    const toRemoveIDs = originalIDs.filter(id => !currentIDs.includes(id))
+
+    await Promise.all(toAddIDs.map(async id => {
+        try {
+            await axios.post(`/api/tasks/${taskID}/task_assignments`, {
+                user_id: id
+            })
+        } catch (error) {
+            console.error('担当者の追加に失敗しました。', error)
+        }
+    }))
+
+    await Promise.all(toRemoveIDs.map(async id => {
+        const assignment = taskAssignments.value.find(a => a.user_id === id)
+
+        if (!assignment) return
+
+        try {
+            await axios.delete(`/api/tasks/${taskID}/task_assignments/${assignment.id}`)
+        } catch (error) {
+
+            console.error('担当者の削除に失敗しました。', error)
+        }
+    }))
 }
 
 const close = () => {
@@ -258,6 +320,14 @@ form {
     align-items: center;
 }
 
+.task-item-group-assignee {
+    display: flex;
+    width: 80%;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
 .name-input {
     padding: 10px 10px;
     font-size: 24px;
@@ -316,20 +386,11 @@ form {
 }
 
 .category-and-assignee-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-}
-
-.task-category-selection {
-    margin-top: 20px;
-    max-width: 400px;
-}
-
-.task-assignee-selection {
-    margin-top: 20px;
-    max-width: 400px;
-    margin-bottom: 30px;
+    background-color: white;
+    padding: 30px;
+    width: 600px;
+    text-align: center;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 </style>

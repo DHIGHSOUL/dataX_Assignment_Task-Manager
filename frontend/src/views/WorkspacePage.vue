@@ -55,7 +55,7 @@
             </div>
         </div>
     </div>
-    <CreateTaskModal v-if="showCreateTaskModal":workspaceID="workspaceID" @close="showCreateTaskModal = false" />
+    <CreateTaskModal v-if="showCreateTaskModal":workspaceID="workspaceID" @close="showCreateTaskModal = false" @update="handleUpdate" />
 </template>
 
 <script setup lang="ts">
@@ -150,10 +150,10 @@ const getCategoryStyle = (categoryID: number | null) => {
     }
 }
 
-onMounted(() => {
-    fetchWorkspaceName()
-    fetchTasks()
-    fecthCategories()
+onMounted(async () => {
+    await fetchWorkspaceName()
+    await fecthCategories()
+    await fetchTasks()
 })
 
 const goToCategoriesSetting = () => {
@@ -189,6 +189,11 @@ const logout = async () => {
 const goToTaskPage = (taskID: number) => {
     localStorage.setItem('previousPageForTaskPage', '/workspace/' + workspaceID)
     router.push(`/task/${taskID}`)
+}
+
+const handleUpdate = async () => {
+    await fetchTasks()
+    showCreateTaskModal.value = false
 }
 </script>
 

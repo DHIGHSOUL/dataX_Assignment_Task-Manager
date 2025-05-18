@@ -52,8 +52,8 @@ const fecthOriginalCategoryInfo = async () => {
     }
 }
 
-onMounted(() => {
-    fecthOriginalCategoryInfo()
+onMounted(async () => {
+    await fecthOriginalCategoryInfo()
 })
 
 const updateCategory = async () => {

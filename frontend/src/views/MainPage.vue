@@ -65,8 +65,8 @@ const fetchWorkspaces = async () => {
     }
 }
 
-onMounted(() => {
-    fetchWorkspaces()
+onMounted(async () => {
+    await fetchWorkspaces()
 })
 
 const token = localStorage.getItem('token')

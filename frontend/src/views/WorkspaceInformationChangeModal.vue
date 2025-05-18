@@ -50,8 +50,8 @@
         }
     }
 
-    onMounted(() => {
-        fetchOriginalWorkspaceInfo()
+    onMounted(async () => {
+        await fetchOriginalWorkspaceInfo()
     })
 
     const changeWorkspaceInformation = async () => {

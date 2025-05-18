@@ -5,6 +5,7 @@
             <button class="return-button" @click="goBack">戻る</button>
         </form>
         <form class="menu-bar">
+            <button class="delete-button" @click="deleteTask">削除</button>
             <button type="button" class="change-button" @click="showTaskChangeModal = true">変更</button>
             <button class="mypage-button" @click="goToMyPage">マイページ</button>
             <button class="logout-button" @click="logout">ログアウト</button>
@@ -37,12 +38,17 @@
                 </div>
                 <div class="task-assignee-group">
                     <p class="task-assignee-label">タスクの担当者</p>
-                    <label class="task-category">example</label>
+                    <div v-if="assignees.length > 0" class="task-assignee-list">
+                        <label v-for="assignee in assignees" :key="assignee.id" class="task-assignee">{{ assignee.name }}</label>
+                    </div>
+                    <div v-else class="task-assignee">
+                        <label>担当者がいません</label>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
-    <TaskInfoChangeModal v-if="showTaskChangeModal" :taskID="taskID" :workspaceID="workspaceID ?? 0" @close="showTaskChangeModal = false" @update="fetchTaskInfo" />
+    <TaskInfoChangeModal v-if="showTaskChangeModal" :taskID="taskID" :workspaceID="workspaceID ?? 0" @close="showTaskChangeModal = false" @update="handleChange" />
 </template>
 
 <script setup lang="ts">
@@ -61,6 +67,7 @@ const due_date = ref('')
 const status = ref('')
 const categoryColor = ref<string | null>(null)
 const categoryName = ref('')
+const assignees = ref<{ id: number, name: string }[]>([])
 
 const taskName = ref('')
 
@@ -93,6 +100,15 @@ const fetchTaskInfo = async () => {
     }
 }
 
+const fetchAssignees = async () => {
+    try {
+        const response = await axios.get(`/api/tasks/${taskID}/task_assignments`)
+        assignees.value = response.data
+    } catch (error) {
+        console.error('担当者の取得に失敗しました。', error)
+    }
+}
+
 const getCategoryStyle = (hex: string | null) => {
     const hexColor = hex ? `#${hex}` : '#ffffff';
     const r = parseInt(hexColor.slice(1, 3), 16);
@@ -106,8 +122,9 @@ const getCategoryStyle = (hex: string | null) => {
     };
 };
 
-onMounted(() => {
-    fetchTaskInfo()
+onMounted(async () => {
+    await fetchTaskInfo()
+    await fetchAssignees()
 })
 
 const goBack = () => {
@@ -118,6 +135,22 @@ const goBack = () => {
 const goToMyPage = () => {
     localStorage.setItem('previousPage', '/task/' + taskID)
     router.push('/mypage')
+}
+
+const deleteTask = async () => {
+    const confirmDelete = window.confirm('本当にタスクを削除しますか？');
+    const previousPage = localStorage.getItem('previousPageForTaskPage')
+
+    if (!confirmDelete) return;
+
+    try {
+        router.push(previousPage || '/main')
+        await axios.delete(`/api/tasks/${taskID}`)
+        alert('タスクを削除しました。')
+    } catch (error) {
+        console.error('タスクの削除に失敗しました。', error)
+        alert('タスクの削除に失敗しました。')
+    }
 }
 
 const logout = async () => {
@@ -131,6 +164,12 @@ const logout = async () => {
     } catch {
         window.alert('ログアウトに失敗しました。');
     }
+}
+
+const handleChange = async () => {
+    await fetchTaskInfo()
+    await fetchAssignees()
+    showTaskChangeModal.value = false
 }
 </script>
 
@@ -153,7 +192,6 @@ h1 {
     font-size: 48px;
     font-weight: bold;
 }
-
 .return-button {
     align-self: center;
     height: 30%;
@@ -172,6 +210,20 @@ h1 {
     flex-direction: row;
     gap: 30px;
 }
+
+.delete-button {
+    align-self: center;
+    height: 30%;
+    padding: 13px 20px;
+    font-size: 24px;
+    color: white;
+    background-color: red;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3)
+}
+
 
 .change-button {
     align-self: center;
@@ -217,22 +269,12 @@ h1 {
     padding: 20px;
 }
 
-.task-board-left-section {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    /* border-radius: 10px;
-    border-width: 0px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3); */
-}
-
+.task-board-left-section,
 .task-board-right-section {
     flex: 1;
+    width: 50%;
     display: flex;
     flex-direction: column;
-    /* border-radius: 10px;
-    border-width: 0px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3); */
 }
 
 .task-column {
@@ -241,7 +283,6 @@ h1 {
     flex-direction: column;
     padding: 20px;
     background-color: white;
-    border-radius: 10px;
 }
 
 .task-info-label {
@@ -263,8 +304,9 @@ h1 {
 .task-description {
     font-size: 24px;
     padding: 10px;
-    border: 1px solid black;
+    border: none;
     border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .task-due-date-group {
@@ -281,8 +323,9 @@ h1 {
 .task-due-date {
     font-size: 24px;
     padding: 10px;
-    border: 1px solid black;
+    border: none;
     border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .task-status-group {
@@ -299,8 +342,9 @@ h1 {
 .task-status {
     font-size: 24px;
     padding: 10px;
-    border: 1px solid black;
+    border: none;
     border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .task-status.pending {
@@ -328,8 +372,9 @@ h1 {
 .task-category {
     font-size: 24px;
     padding: 10px;
-    border: 1px solid black;
+    border: none;
     border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .task-assignee-group {
@@ -341,5 +386,19 @@ h1 {
 .task-assignee-label {
     font-size: 24px;
     font-weight: bold;
+}
+
+.task-assignee-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.task-assignee {
+    font-size: 24px;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
 }
 </style>

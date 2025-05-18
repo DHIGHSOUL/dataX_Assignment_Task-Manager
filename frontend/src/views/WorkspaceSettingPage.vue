@@ -58,9 +58,9 @@ const fetchInvitationLink = async () => {
     }
 }
 
-onMounted(() => {
-    fetchWorkspaceInfo()
-    fetchInvitationLink()
+onMounted(async () => {
+    await fetchWorkspaceInfo()
+    await fetchInvitationLink()
 })
 
 const goBack = () => {

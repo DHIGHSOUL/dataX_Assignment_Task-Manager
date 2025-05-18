@@ -54,8 +54,8 @@ const fetchUserInfo = async () => {
     }
 }
 
-onMounted(() => {
-    fetchUserInfo()
+onMounted(async () => {
+    await fetchUserInfo()
 })
 
 const handleUpdatedPassword = () => {

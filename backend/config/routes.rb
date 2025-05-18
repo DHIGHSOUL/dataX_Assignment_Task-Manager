@@ -21,7 +21,7 @@ Rails.application.routes.draw do
 
     resources :tasks, only: [:show, :destroy, :update] do
       resources :task_assignments, only: [:create, :index]
-      delete 'task_assignments/:user_id', to: 'task_assignments#destroy'
+      delete 'task_assignments/:id', to: 'task_assignments#destroy'
     end
 
     resources :workspace_categories, only: [:show, :update, :destroy]

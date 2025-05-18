@@ -12,12 +12,12 @@ class Api::TaskAssignmentsController < ApplicationController
 
     def index
         task = Task.find(params[:task_id])
-        users = task.assigned_users.select(:id, :name)
-        render json: users
+        assignments = task.task_assignments.includes(:user)
+        render json: assignments.map { |a| { id: a.id, user_id: a.user_id, name: a.user.name } }
     end
 
     def destroy
-        assignment = TaskAssignment.find_by(task_id: params[:task_id], user_id: params[:user_id])
+        assignment = TaskAssignment.find_by(id: params[:id])
         if assignment
             if assignment.destroy
                 render json: { message: 'Task assignment deleted successfully' }, status: :ok
