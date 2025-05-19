@@ -24,7 +24,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import axios from "../plugins/axios";
+import axios from "../../plugins/axios";
 import PasswordChangeModal from "./PasswordChangeModal.vue";
 import NameChangeModal from "./NameChangeModal.vue";
 

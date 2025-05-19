@@ -1,36 +1,51 @@
 <template lang="pug">
     .modal-overlay(@click.self="close")
         .modal-content
-            h1 ワークスペースに参加
-            p.join-label 参加コードを入力してください。
+            h1 ワークスペース作成
+            p.create-label 作成するワークスペース名を入力してください。
             form
-                input(type="text" v-model="workspaceName" placeholder="参加コード" required)
-                button.join-button(type="button" @click="createWorkspace") 参加
+                input.name-input(type="text" v-model="workspaceName" placeholder="ワークスペース名" required)
+                textarea.description-input(type="text" v-model="workspaceDescription" placeholder="ワークスペースの説明(Option)" @input="autoResize" ref="descriptionRef")
+                button.create-button(type="button" @click="createWorkspace") 作成
                 button.cancel-button(type="button" @click="close") キャンセル
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import axios from "../plugins/axios";
+import { ref, watch } from "vue";
+import axios from "../../plugins/axios";
 
 const emit = defineEmits(["close"]);
 const workspaceName = ref("");
+const workspaceDescription = ref("");
+
+const descriptionRef = ref<HTMLTextAreaElement | null>(null);
 
 const createWorkspace = async () => {
   if (!workspaceName.value.trim()) {
-    alert("有効なコードを入力してください。");
+    alert("ワークスペース名を入力してください。");
     return;
   }
 
   try {
-    await axios.post("/api/user_workspaces/join", {
-      code: workspaceName.value,
+    await axios.post("/api/workspaces", {
+      workspace: {
+        name: workspaceName.value,
+        description: workspaceDescription.value,
+      },
     });
-    alert("ワークスペース参加に成功しました。");
+    alert("ワークスペースを作成しました。");
     close();
     window.location.reload();
   } catch (error) {
-    alert("ワークスペース参加に失敗しました。");
+    alert("ワークスペースの作成に失敗しました。");
+  }
+};
+
+const autoResize = () => {
+  if (descriptionRef.value) {
+    descriptionRef.value.style.height = "auto";
+    descriptionRef.value.style.height =
+      descriptionRef.value.scrollHeight + "px";
   }
 };
 
@@ -63,11 +78,11 @@ const close = () => {
 }
 
 h1 {
-  margin-bottom: 30px;
   font-size: 48px;
+  margin-bottom: 30px;
 }
 
-.join-label {
+.create-label {
   font-size: 24px;
   margin-bottom: 20px;
 }
@@ -79,16 +94,26 @@ form {
   gap: 10px;
 }
 
-input {
+.name-input {
   padding: 5px 5px;
   font-size: 24px;
   align-self: center;
-  margin: 10px 0;
   border: 1px solid black;
   border-radius: 4px;
 }
 
-.join-button {
+.description-input {
+  width: 80%;
+  min-height: 60px;
+  font-size: 24px;
+  margin: 10px 0;
+  padding: 5px;
+  align-self: center;
+  border: 1px solid black;
+  border-radius: 4px;
+}
+
+.create-button {
   padding: 5px 20px;
   font-size: 24px;
   color: white;

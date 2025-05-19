@@ -61,7 +61,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import axios from "../plugins/axios";
+import axios from "../../plugins/axios";
 import CreateTaskModal from "./CreateTaskModal.vue";
 
 interface Task {

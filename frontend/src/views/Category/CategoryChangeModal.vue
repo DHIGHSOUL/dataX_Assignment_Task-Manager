@@ -1,24 +1,26 @@
 <template lang="pug">
   .modal-overlay(@click.self="close")
     .modal-content
-      h1 カテゴリ作成
-      p.create-label 作成するカテゴリ情報を入力してください。
+      h1 カテゴリ変更
+      p.update-label 変更するカテゴリ情報を入力してください。
       form
         .category-item-group
-          p.create-label カテゴリ名
+          p.update-label カテゴリ名
           input.name-input(v-model="categoryName" placeholder="カテゴリ名" type="text" required)
         .category-item-group
-          p.create-label カテゴリのカラーコード
+          p.update-label カテゴリのカラーコード
           input.color-input(v-model="categoryColor" placeholder="カテゴリの色" type="text")
-        button.create-button(type="submit" @click="createCategory") 作成
+        .category-change-button-group
+          button.update-button(type="button" @click="updateCategory") 変更
+          button.delete-button(type="button" @click="deleteCategory") 削除
         button.cancel-button(type="button" @click="close") キャンセル
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import axios from "../plugins/axios";
+import { ref, onMounted } from "vue";
+import axios from "../../plugins/axios";
 
-const emit = defineEmits(["close"]);
+const emit = defineEmits(["close", "update"]);
 
 const categoryName = ref("");
 const categoryColor = ref("");
@@ -28,9 +30,29 @@ const props = defineProps({
     type: Number,
     required: true,
   },
+  categoryID: {
+    type: Number,
+    required: true,
+  },
 });
 
-const createCategory = async () => {
+const fecthOriginalCategoryInfo = async () => {
+  try {
+    const response = await axios.get(
+      `/api/workspace_categories/${props.categoryID}`
+    );
+    categoryName.value = response.data.name;
+    categoryColor.value = response.data.color;
+  } catch (error) {
+    console.error("カテゴリ情報の取得に失敗しました。", error);
+  }
+};
+
+onMounted(async () => {
+  await fecthOriginalCategoryInfo();
+});
+
+const updateCategory = async () => {
   if (!categoryName.value.trim()) {
     alert("カテゴリ名を入力してください。");
     return;
@@ -46,17 +68,28 @@ const createCategory = async () => {
   }
 
   try {
-    await axios.post(
-      `/api/workspaces/${props.workspaceID}/workspace_categories`,
-      {
-        name: categoryName.value,
-        color: categoryColor.value,
-      }
-    );
-    alert("カテゴリを作成しました。");
+    await axios.patch(`/api/workspace_categories/${props.categoryID}`, {
+      name: categoryName.value,
+      color: categoryColor.value,
+    });
+    alert("カテゴリを変更しました。");
+    emit("update");
     close();
   } catch (error) {
-    alert("カテゴリの作成に失敗しました。");
+    alert("カテゴリの変更に失敗しました。");
+  }
+};
+
+const deleteCategory = async () => {
+  if (confirm("本当にこのカテゴリを削除しますか？")) {
+    try {
+      await axios.delete(`/api/workspace_categories/${props.categoryID}`);
+      alert("カテゴリを削除しました。");
+      emit("update");
+      close();
+    } catch (error) {
+      alert("カテゴリの削除に失敗しました。");
+    }
   }
 };
 
@@ -93,7 +126,7 @@ h1 {
   margin-bottom: 30px;
 }
 
-.create-label {
+.update-label {
   font-size: 24px;
   margin-bottom: 20px;
 }
@@ -128,7 +161,13 @@ form {
   border-radius: 4px;
 }
 
-.create-button {
+.category-change-button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+}
+
+.update-button {
   padding: 10px 20px;
   font-size: 24px;
   color: white;
@@ -137,7 +176,17 @@ form {
   border-radius: 4px;
   cursor: pointer;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
-  margin-bottom: 10px;
+}
+
+.delete-button {
+  padding: 10px 20px;
+  color: white;
+  font-size: 24px;
+  background-color: #f44336;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .cancel-button {

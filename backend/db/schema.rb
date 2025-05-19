@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_14_160309) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_19_002543) do
   create_table "invitation_codes", force: :cascade do |t|
     t.integer "workspace_id", null: false
     t.string "code"
@@ -26,18 +26,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_14_160309) do
     t.datetime "updated_at", null: false
     t.index ["task_id"], name: "index_task_assignments_on_task_id"
     t.index ["user_id"], name: "index_task_assignments_on_user_id"
-  end
-
-  create_table "task_histories", force: :cascade do |t|
-    t.integer "task_id", null: false
-    t.integer "user_id", null: false
-    t.string "action"
-    t.json "before_data"
-    t.json "after_data"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["task_id"], name: "index_task_histories_on_task_id"
-    t.index ["user_id"], name: "index_task_histories_on_user_id"
   end
 
   create_table "task_progresses", force: :cascade do |t|
@@ -105,8 +93,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_14_160309) do
   add_foreign_key "invitation_codes", "workspaces"
   add_foreign_key "task_assignments", "tasks"
   add_foreign_key "task_assignments", "users"
-  add_foreign_key "task_histories", "tasks"
-  add_foreign_key "task_histories", "users"
   add_foreign_key "task_progresses", "users"
   add_foreign_key "task_progresses", "workspaces"
   add_foreign_key "tasks", "workspace_categories"

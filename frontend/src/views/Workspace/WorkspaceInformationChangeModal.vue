@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
-import axios from "../plugins/axios";
+import axios from "../../plugins/axios";
 
 const emit = defineEmits(["close", "update"]);
 const workspaceName = ref("");

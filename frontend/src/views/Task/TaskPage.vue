@@ -39,7 +39,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import axios from "../plugins/axios";
+import axios from "../../plugins/axios";
 import TaskInfoChangeModal from "./TaskInfoChangeModal.vue";
 
 const route = useRoute();

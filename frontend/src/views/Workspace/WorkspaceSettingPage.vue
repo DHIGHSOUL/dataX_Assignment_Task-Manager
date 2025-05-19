@@ -22,7 +22,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import axios from "../plugins/axios";
+import axios from "../../plugins/axios";
 import { useRoute, useRouter } from "vue-router";
 import { onMounted } from "vue";
 import WorkspaceInformationChangeModal from "./WorkspaceInformationChangeModal.vue";

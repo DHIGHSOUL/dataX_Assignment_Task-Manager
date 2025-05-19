@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import axios from "../plugins/axios";
+import axios from "../../plugins/axios";
 
 const emit = defineEmits(["close", "update"]);
 const name = ref("");

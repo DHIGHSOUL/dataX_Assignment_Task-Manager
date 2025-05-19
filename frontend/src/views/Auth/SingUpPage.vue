@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import axios from "../plugins/axios";
+import axios from "../../plugins/axios";
 import { useRouter } from "vue-router";
 
 const router = useRouter();

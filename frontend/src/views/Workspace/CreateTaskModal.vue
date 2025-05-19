@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
-import axios from "../plugins/axios";
+import axios from "../../plugins/axios";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 

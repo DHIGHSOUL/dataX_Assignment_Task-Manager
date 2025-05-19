@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import axios from "../plugins/axios";
+import axios from "../../plugins/axios";
 import CreateCategoryModal from "./CreateCategoryModal.vue";
 import CategoryChangeModal from "./CategoryChangeModal.vue";
 

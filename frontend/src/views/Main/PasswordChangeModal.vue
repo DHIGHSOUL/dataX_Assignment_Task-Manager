@@ -1,18 +1,18 @@
 <template lang="pug">
     .modal-overlay(@click.self="close")
         .modal-content
-            h1 パースワード変更
-            p.change-label 変更するパースワードを入力してください。
+            h1 パスワード変更
+            p.change-label 変更するパスワードを入力してください。
             .change-password-group
-                input.password-input(type="text" v-model="password" placeholder="パースワード" required)
-                input.password-input-again(type="text" v-model="passwordConfirmation" placeholder="パースワード再入力" required)
+                input.password-input(type="text" v-model="password" placeholder="パスワード" required)
+                input.password-input-again(type="text" v-model="passwordConfirmation" placeholder="パスワード再入力" required)
                 button.change-button(type="submit" @click="changePassword") 更新
                 button.cancel-button(type="button" @click="close") キャンセル
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
-import axios from "../plugins/axios";
+import axios from "../../plugins/axios";
 
 const emit = defineEmits(["close", "update"]);
 const password = ref("");

@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import axios from "../plugins/axios";
+import axios from "../../plugins/axios";
 import { useRouter } from "vue-router";
 import { onMounted } from "vue";
 import CreateWorkspaceModal from "./CreateWorkspaceModal.vue";
@@ -148,6 +148,11 @@ const goToMyPage = () => {
   justify-content: center;
   align-items: center;
   height: 60vh;
+}
+
+p {
+  font-size: 18px;
+  text-align: center;
 }
 
 .workspace {

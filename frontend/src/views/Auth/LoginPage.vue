@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import axios from "../plugins/axios";
+import axios from "../../plugins/axios";
 import { useRouter } from "vue-router";
 import { onMounted, onUnmounted } from "vue";
 

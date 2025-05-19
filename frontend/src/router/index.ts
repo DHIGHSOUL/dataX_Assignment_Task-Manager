@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory } from "vue-router"
-import LoginPage from '../views/LoginPage.vue'
-import SingUpPage from "../views/SingUpPage.vue"
-import MainPage from "../views/MainPage.vue"
-import WorkspacePage from "../views/WorkspacePage.vue"
-import MyPage from "../views/MyPage.vue"
-import WorkspaceSettingPage from "../views/WorkspaceSettingPage.vue"
-import TaskPage from "../views/TaskPage.vue"
-import CategorySettingPage from "../views/CategorySettingPage.vue"
+import LoginPage from '../views/Auth/LoginPage.vue'
+import SingUpPage from "../views/Auth/SingUpPage.vue"
+import MainPage from "../views/Main/MainPage.vue"
+import WorkspacePage from "../views/Workspace/WorkspacePage.vue"
+import MyPage from "../views/Main/MyPage.vue"
+import WorkspaceSettingPage from "../views/Workspace/WorkspaceSettingPage.vue"
+import TaskPage from "../views/Task/TaskPage.vue"
+import CategorySettingPage from "../views/Category/CategorySettingPage.vue"
 
 const routes = [
     {
